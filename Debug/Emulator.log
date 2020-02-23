@@ -1,0 +1,33 @@
+﻿  Emulator.cpp
+\\nstu-nas01.uwe.ac.uk\users2$\fmn2-mufti\Windows\Desktop\Emulator\Emulator\emulator\Emulator.cpp(417,2): warning C4060:  switch statement contains no 'case' or 'default' labels
+\\nstu-nas01.uwe.ac.uk\users2$\fmn2-mufti\Windows\Desktop\Emulator\Emulator\emulator\Emulator.cpp(577,1): warning C4996:  'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(208): message :  see declaration of 'fopen'
+\\nstu-nas01.uwe.ac.uk\users2$\fmn2-mufti\Windows\Desktop\Emulator\Emulator\emulator\Emulator.cpp(591,1): warning C4996:  'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(208): message :  see declaration of 'fopen'
+\\nstu-nas01.uwe.ac.uk\users2$\fmn2-mufti\Windows\Desktop\Emulator\Emulator\emulator\Emulator.cpp(748,1): warning C4996:  'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(208): message :  see declaration of 'fopen'
+\\nstu-nas01.uwe.ac.uk\users2$\fmn2-mufti\Windows\Desktop\Emulator\Emulator\emulator\Emulator.cpp(754,1): warning C4996:  'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(2263): message :  see declaration of 'sscanf'
+\\nstu-nas01.uwe.ac.uk\users2$\fmn2-mufti\Windows\Desktop\Emulator\Emulator\emulator\Emulator.cpp(756,1): warning C4996:  'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(2263): message :  see declaration of 'sscanf'
+\\nstu-nas01.uwe.ac.uk\users2$\fmn2-mufti\Windows\Desktop\Emulator\Emulator\emulator\Emulator.cpp(782,1): warning C4996:  'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(1774): message :  see declaration of 'sprintf'
+\\nstu-nas01.uwe.ac.uk\users2$\fmn2-mufti\Windows\Desktop\Emulator\Emulator\emulator\Emulator.cpp(821,1): warning C4996:  'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(1774): message :  see declaration of 'sprintf'
+\\nstu-nas01.uwe.ac.uk\users2$\fmn2-mufti\Windows\Desktop\Emulator\Emulator\emulator\Emulator.cpp(831,1): warning C4996:  'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(2263): message :  see declaration of 'sscanf'
+\\nstu-nas01.uwe.ac.uk\users2$\fmn2-mufti\Windows\Desktop\Emulator\Emulator\emulator\Emulator.cpp(835,1): warning C4996:  'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(2263): message :  see declaration of 'sscanf'
+\\nstu-nas01.uwe.ac.uk\users2$\fmn2-mufti\Windows\Desktop\Emulator\Emulator\emulator\Emulator.cpp(876,1): warning C4996:  'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(2263): message :  see declaration of 'sscanf'
+\\nstu-nas01.uwe.ac.uk\users2$\fmn2-mufti\Windows\Desktop\Emulator\Emulator\emulator\Emulator.cpp(878,1): warning C4996:  'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(2263): message :  see declaration of 'sscanf'
+\\nstu-nas01.uwe.ac.uk\users2$\fmn2-mufti\Windows\Desktop\Emulator\Emulator\emulator\Emulator.cpp(903,1): warning C4996:  'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(1774): message :  see declaration of 'sprintf'
+\\nstu-nas01.uwe.ac.uk\users2$\fmn2-mufti\Windows\Desktop\Emulator\Emulator\emulator\Emulator.cpp(947,1): warning C4996:  'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\um\winsock2.h(1831): message :  see declaration of 'inet_addr'
+\\nstu-nas01.uwe.ac.uk\users2$\fmn2-mufti\Windows\Desktop\Emulator\Emulator\emulator\Emulator.cpp(952,1): warning C4996:  'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  stdafx.cpp
+  Generating Code...
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\um\winsock2.h(1831): message :  see declaration of 'inet_addr'
+  Emulator.vcxproj -> \\nstu-nas01.uwe.ac.uk\users2$\fmn2-mufti\Windows\Desktop\Emulator\Emulator\Debug\Emulator.exe
