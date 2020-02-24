@@ -1390,19 +1390,35 @@ void Group_1(BYTE opcode)
 		}
 		break;
 
-	case 0x3C: //CHI ***
-		
-		if ((Flags & FLAG_Z) != 0)
+	case 0x3C: //CHI
+		LB = fetch();
+
+		if ((CF | ZF) == 1)
 		{
-			ProgramCounter = getAddressAbs(); 
+			offset = (WORD)LB;
+
+			if ((offset & 0x80) != 0)
+			{
+				offset += 0xFF00; //offset = offset + 0xFF00
+			}
+			address = ProgramCounter + offset;
+			ProgramCounter = address;
 		}
 		break;
 
 	case 0x3D: //CLE
+		LB = fetch();
 
-		if ((Flags & FLAG_N) == 0)
+		if ((CF | ZF) == 0)
 		{
-			ProgramCounter = getAddressAbs();
+			offset = (WORD)LB;
+
+			if ((offset & 0x80) != 0)
+			{
+				offset += 0xFF00; //offset = offset + 0xFF00
+			}
+			address = ProgramCounter + offset;
+			ProgramCounter = address;
 		}
 		break;
 
