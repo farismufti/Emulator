@@ -1245,7 +1245,7 @@ void Group_1(BYTE opcode)
 	case 0x07: //BMI
 		LB = fetch();
 
-		if((Flags & FLAG_C) == 0)
+		if (NF == 1)
 		{
 			offset = (WORD)LB;
 
@@ -1253,16 +1253,25 @@ void Group_1(BYTE opcode)
 			{
 				offset += 0xFF00; //offset = offset + 0xFF00
 			}
-			address = ProgramCounter + offset; 
+			address = ProgramCounter + offset;
 			ProgramCounter = address;
 		}
+		break;
 
 	case 0x08: //BPL
-		if ((Flags & FLAG_N) != FLAG_N)
+		LB = fetch();
+
+		if (NF == 0)
 		{
-			ProgramCounter = getAddressAbs(); 
+			offset = (WORD)LB;
+
+			if ((offset & 0x80) != 0)
+			{
+				offset += 0xFF00; //offset = offset + 0xFF00
+			}
+			address = ProgramCounter + offset;
+			ProgramCounter = address;
 		}
-		break;
 
 	case 0x09: //BGE
 		LB = fetch();
@@ -1793,13 +1802,13 @@ void Group_1(BYTE opcode)
 		set_zn_flags(Memory[address]);
 		break;
 
-	case 0x28: //ANI ***check***
+	case 0x28: //ANI
 		data = fetch();
 		Registers[REGISTER_A] = Registers[REGISTER_A] & data;
 		set_zn_flags(Registers[REGISTER_A]);
 		break;
 
-	case 0x29: //XRI ***check***
+	case 0x29: //XRI
 		data = fetch();
 		Registers[REGISTER_A] = Registers[REGISTER_A] ^ data;
 		set_zn_flags(Registers[REGISTER_A]);
