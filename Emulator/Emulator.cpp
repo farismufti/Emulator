@@ -519,6 +519,47 @@ void Group_1(BYTE opcode)
 	BYTE param2;
 	WORD offset;
 	BYTE saved_flags;
+	BYTE NF;
+	BYTE VF;
+	BYTE ZF;
+	BYTE CF;
+	BYTE temp;
+
+	if ((Flags & FLAG_N) == FLAG_N)
+	{
+		NF = 1;
+	}
+	else
+	{
+		NF = 0;
+	}
+
+	if ((Flags & FLAG_V) == FLAG_V)
+	{
+		VF = 1;
+	}
+	else
+	{
+		VF = 0;
+	}
+
+	if ((Flags & FLAG_Z) == FLAG_Z)
+	{
+		ZF = 1;
+	}
+	else
+	{
+		ZF = 0;
+	}
+
+	if ((Flags & FLAG_C) == FLAG_C)
+	{
+		CF = 1;
+	}
+	else
+	{
+		CF = 0;
+	}
 
 	switch (opcode) {
 
@@ -1117,7 +1158,7 @@ void Group_1(BYTE opcode)
 			{
 				offset += 0xFF00; //offset = offset + 0xFF00
 			}
-			address = ProgramCounter + offset;  //****check
+			address = ProgramCounter + offset; 
 			ProgramCounter = address;
 		}
 		break;
@@ -1138,44 +1179,83 @@ void Group_1(BYTE opcode)
 		break;
 
 	case 0x03: //BNE
+		LB = fetch();
 
-		if ((Flags & FLAG_Z) != 1)
+		if ((Flags & FLAG_Z) == 0)
 		{
-			ProgramCounter = getAddressAbs();
+			offset = (WORD)LB;
+
+			if ((offset & 0x80) != 0)
+			{
+				offset += 0xFF00; //offset = offset + 0xFF00
+			}
+			address = ProgramCounter + offset;
+			ProgramCounter = address;
 		}
 		break;
 
 	case 0x04: //BEQ
+		LB = fetch();
 
-		if ((Flags & FLAG_Z) == 1)
+		if ((Flags & FLAG_Z) == FLAG_Z)
 		{
-			ProgramCounter = getAddressAbs();
+			offset = (WORD)LB;
+
+			if ((offset & 0x80) != 0)
+			{
+				offset += 0xFF00; //offset = offset + 0xFF00
+			}
+			address = ProgramCounter + offset;
+			ProgramCounter = address;
 		}
 		break;
 
 	case 0x05: //BVC
+		LB = fetch();
 
-		if ((Flags & FLAG_V) == FLAG_V)
+		if ((Flags & FLAG_V) == 0)
 		{
-			ProgramCounter = getAddressAbs();
+			offset = (WORD)LB;
+
+			if ((offset & 0x80) != 0)
+			{
+				offset += 0xFF00; //offset = offset + 0xFF00
+			}
+			address = ProgramCounter + offset;
+			ProgramCounter = address;
 		}
 		break;
 
 	case 0x06: //BVS
+		LB = fetch();
 
-		address = getAddressAbs();
-		if ((Flags & FLAG_V) != 0)
+		if ((Flags & FLAG_V) == FLAG_V)
 		{
+			offset = (WORD)LB;
+
+			if ((offset & 0x80) != 0)
+			{
+				offset += 0xFF00; //offset = offset + 0xFF00
+			}
+			address = ProgramCounter + offset;
 			ProgramCounter = address;
 		}
 		break;
 
 	case 0x07: //BMI
-		if ((Flags & FLAG_N) == FLAG_N)
+		LB = fetch();
+
+		if((Flags & FLAG_C) == 0)
 		{
-			ProgramCounter = getAddressAbs();
+			offset = (WORD)LB;
+
+			if ((offset & 0x80) != 0)
+			{
+				offset += 0xFF00; //offset = offset + 0xFF00
+			}
+			address = ProgramCounter + offset; 
+			ProgramCounter = address;
 		}
-		break;
 
 	case 0x08: //BPL
 		if ((Flags & FLAG_N) != FLAG_N)
@@ -1185,32 +1265,64 @@ void Group_1(BYTE opcode)
 		break;
 
 	case 0x09: //BGE
-		if ((Flags & FLAG_Z) <= 0)
+		LB = fetch();
+
+		if ((NF ^ VF) == 0)
 		{
-			ProgramCounter = getAddressAbs(); 
+			offset = (WORD)LB;
+
+			if ((offset & 0x80) != 0)
+			{
+				offset += 0xFF00; //offset = offset + 0xFF00
+			}
+			address = ProgramCounter + offset;
+			ProgramCounter = address;
 		}
-		break;
 
 	case 0x0A: //BLE
-		if ((Flags & FLAG_Z) >= 0)
+		LB = fetch();
+
+		if ((ZF | NF ^ VF) == 1) //***Check if brackets are needed***
 		{
-			ProgramCounter = getAddressAbs(); 
+			offset = (WORD)LB;
+
+			if ((offset & 0x80) != 0)
+			{
+				offset += 0xFF00; //offset = offset + 0xFF00
+			}
+			address = ProgramCounter + offset;
+			ProgramCounter = address;
 		}
-		break;
 
 	case 0x0B: //BLS
-		if ((Flags & FLAG_N) < 0)
+		LB = fetch();
+
+		if ((CF | ZF) == 1)
 		{
-			ProgramCounter = getAddressAbs();
+			offset = (WORD)LB;
+
+			if ((offset & 0x80) != 0)
+			{
+				offset += 0xFF00; //offset = offset + 0xFF00
+			}
+			address = ProgramCounter + offset;
+			ProgramCounter = address;
 		}
-		break;
 
 	case 0x0C: //BHI
-		if ((Flags & FLAG_N) > 0)
+		LB = fetch();
+
+		if ((CF | ZF) == 1)
 		{
-			ProgramCounter = getAddressAbs(); 
+			offset = (WORD)LB;
+
+			if ((offset & 0x80) != 0)
+			{
+				offset += 0xFF00; //offset = offset + 0xFF00
+			}
+			address = ProgramCounter + offset;
+			ProgramCounter = address;
 		}
-		break;
 
 	case 0x34: //CCC
 		Flags = Flags & FLAG_C;
@@ -1345,38 +1457,38 @@ void Group_1(BYTE opcode)
 		break;
 
 	case 0x96: //BT, A-B
-		set_zn_flags(Registers[REGISTER_A]);
-		Flags = Flags & (0xFF - FLAG_V);
+		temp = Registers[REGISTER_A] & Registers[REGISTER_B];
+		set_zn_flags(temp);
 		break;
 
 	case 0xA6: //BT, A-C
-		set_zn_flags(Registers[REGISTER_A]);
-		Flags = Flags & (0xFF - FLAG_V);
+		temp = Registers[REGISTER_A] & Registers[REGISTER_C];
+		set_zn_flags(temp);
 		break;
 
 	case 0xB6: //BT, A-D
-		set_zn_flags(Registers[REGISTER_A]);
-		Flags = Flags & (0xFF - FLAG_V);
+		temp = Registers[REGISTER_A] & Registers[REGISTER_D];
+		set_zn_flags(temp);
 		break;
 
 	case 0xC6: //BT, A-E
-		set_zn_flags(Registers[REGISTER_A]);
-		Flags = Flags & (0xFF - FLAG_V);
+		temp = Registers[REGISTER_A] & Registers[REGISTER_E];
+		set_zn_flags(temp);
 		break;
 
 	case 0xD6: //BT, A-L
-		set_zn_flags(Registers[REGISTER_A]);
-		Flags = Flags & (0xFF - FLAG_V);
+		temp = Registers[REGISTER_A] & Registers[REGISTER_L];
+		set_zn_flags(temp);
 		break;
 
 	case 0xE6: //BT, A-H
-		set_zn_flags(Registers[REGISTER_A]);
-		Flags = Flags & (0xFF - FLAG_V);
+		temp = Registers[REGISTER_A] & Registers[REGISTER_H];
+		set_zn_flags(temp);
 		break;
 
 	case 0xF6: //BT, A-M
-		set_zn_flags(Registers[REGISTER_A]);
-		Flags = Flags & (0xFF - FLAG_V);
+		temp = Registers[REGISTER_A] & Registers[REGISTER_M];
+		set_zn_flags(temp);
 		break;
 
 	case 0x44: //INC Absolute
@@ -1667,12 +1779,14 @@ void Group_1(BYTE opcode)
 
 	case 0x28: //ANI ***check***
 		data = fetch();
-		data = data & Registers[REGISTER_A];
+		Registers[REGISTER_A] = Registers[REGISTER_A] & data;
+		set_zn_flags(Registers[REGISTER_A]);
 		break;
 
 	case 0x29: //XRI ***check***
 		data = fetch();
-		data = data ^ Registers[REGISTER_A];
+		Registers[REGISTER_A] = Registers[REGISTER_A] ^ data;
+		set_zn_flags(Registers[REGISTER_A]);
 		break;
 
 	case 0x43: ///TST Absolute
@@ -1766,6 +1880,7 @@ void Group_1(BYTE opcode)
 			Flags = Flags & (0xFF - FLAG_C);
 		}
 		Memory[address] = (Memory[address] << 1) & 0xFE;
+		set_zn_flags(Memory[address]);
 		break;
 
 	case 0x58: //SAL abs,X
@@ -1780,6 +1895,7 @@ void Group_1(BYTE opcode)
 			Flags = Flags & (0xFF - FLAG_C);
 		}
 		Memory[address] = (Memory[address] << 1) & 0xFE;
+		set_zn_flags(Memory[address]);
 		break;
 
 	case 0x68: //SALA
@@ -1792,6 +1908,7 @@ void Group_1(BYTE opcode)
 			Flags = Flags & (0xFF - FLAG_C);
 		}
 		Registers[REGISTER_A] = (Registers[REGISTER_A] << 1) & 0xFE;
+		set_zn_flags(Registers[REGISTER_A]);
 		break;
 
 	case 0x49: //ASR Absolute
