@@ -659,7 +659,7 @@ void Group_1(BYTE opcode)
 
 	case 0x4F: //LODS Immidiate
 		data = fetch();
-		StackPointer = data << 8, StackPointer += fetch();
+		StackPointer = data << 8, StackPointer = StackPointer + fetch();
 		break;
 
 	case 0x5F: //LODS Absolute
@@ -668,7 +668,7 @@ void Group_1(BYTE opcode)
 		if (address >= 0 && address < MEMORY_SIZE - 1)
 		{
 			StackPointer = (WORD)Memory[address] << 8;
-			StackPointer += Memory[address + 1];
+			StackPointer = StackPointer + Memory[address + 1];
 		}
 		break;
 
@@ -678,7 +678,7 @@ void Group_1(BYTE opcode)
 		if (address >= 0 && address < MEMORY_SIZE - 1)
 		{
 			StackPointer = (WORD)Memory[address] << 8;
-			StackPointer += Memory[address + 1];
+			StackPointer = StackPointer + Memory[address + 1];
 		}
 		break;
 
@@ -1156,7 +1156,7 @@ void Group_1(BYTE opcode)
 
 			if ((offset & 0x80) != 0)
 			{
-				offset += 0xFF00; //offset = offset + 0xFF00
+				offset = offset + 0xFF00;
 			}
 			address = ProgramCounter + offset; 
 			ProgramCounter = address;
@@ -1187,7 +1187,7 @@ void Group_1(BYTE opcode)
 
 			if ((offset & 0x80) != 0)
 			{
-				offset += 0xFF00; //offset = offset + 0xFF00
+				offset = offset + 0xFF00;
 			}
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
@@ -1203,7 +1203,7 @@ void Group_1(BYTE opcode)
 
 			if ((offset & 0x80) != 0)
 			{
-				offset += 0xFF00; //offset = offset + 0xFF00
+				offset = offset + 0xFF00;
 			}
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
@@ -1219,7 +1219,7 @@ void Group_1(BYTE opcode)
 
 			if ((offset & 0x80) != 0)
 			{
-				offset += 0xFF00; //offset = offset + 0xFF00
+				offset = offset + 0xFF00;
 			}
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
@@ -1235,7 +1235,7 @@ void Group_1(BYTE opcode)
 
 			if ((offset & 0x80) != 0)
 			{
-				offset += 0xFF00; //offset = offset + 0xFF00
+				offset = offset + 0xFF00;
 			}
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
@@ -1251,7 +1251,7 @@ void Group_1(BYTE opcode)
 
 			if ((offset & 0x80) != 0)
 			{
-				offset += 0xFF00; //offset = offset + 0xFF00
+				offset = offset + 0xFF00;
 			}
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
@@ -1267,7 +1267,7 @@ void Group_1(BYTE opcode)
 
 			if ((offset & 0x80) != 0)
 			{
-				offset += 0xFF00; //offset = offset + 0xFF00
+				offset = offset + 0xFF00;
 			}
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
@@ -1282,7 +1282,7 @@ void Group_1(BYTE opcode)
 
 			if ((offset & 0x80) != 0)
 			{
-				offset += 0xFF00; //offset = offset + 0xFF00
+				offset = offset + 0xFF00;
 			}
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
@@ -1297,7 +1297,7 @@ void Group_1(BYTE opcode)
 
 			if ((offset & 0x80) != 0)
 			{
-				offset += 0xFF00; //offset = offset + 0xFF00
+				offset = offset + 0xFF00;
 			}
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
@@ -1312,7 +1312,7 @@ void Group_1(BYTE opcode)
 
 			if ((offset & 0x80) != 0)
 			{
-				offset += 0xFF00; //offset = offset + 0xFF00
+				offset = offset + 0xFF00;
 			}
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
@@ -1327,7 +1327,7 @@ void Group_1(BYTE opcode)
 
 			if ((offset & 0x80) != 0)
 			{
-				offset += 0xFF00; //offset = offset + 0xFF00
+				offset = offset + 0xFF00;
 			}
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
@@ -1475,6 +1475,27 @@ void Group_1(BYTE opcode)
 			Memory[address] = (Memory[address] >> 1);
 			set_zn_flags(Memory[address]);
 		}
+		break;
+
+	case 0x66: //RCRA
+		saved_flags = Flags;
+
+		if ((Registers[REGISTER_A] & 0x01) == 0x01)
+		{
+			Flags = Flags | FLAG_C;
+		}
+		else
+		{
+			Flags = Flags & (0xFF - FLAG_C);
+		}
+		
+		Registers[REGISTER_A] = (Registers[REGISTER_A] >> 1) & 0x7F;
+
+		if ((saved_flags & FLAG_C) == FLAG_C)
+		{
+			Registers[REGISTER_A] = Registers[REGISTER_A] | 0x01;
+		}
+		set_zn_flags(Registers[REGISTER_A]);
 		break;
 
 	case 0x1C: //INX *** was index register,, dex
