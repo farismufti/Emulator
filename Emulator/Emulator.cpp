@@ -1780,12 +1780,6 @@ void Group_1(BYTE opcode)
 		set_zn_flags(Registers[REGISTER_A]);
 		break;
 
-	case 0x6A: //NOTA, A
-		Registers[REGISTER_A] = ~Registers[REGISTER_A];
-		set_zn_flags(Registers[REGISTER_A]);
-		Flags = Flags & (0xFF - FLAG_C);
-		break;
-
 	case 0x4A: //NOT Absolute
 		address = getAddressAbs();
 		
@@ -1799,6 +1793,12 @@ void Group_1(BYTE opcode)
 
 		Memory[address] = ~Memory[address];
 		set_zn_flags(Memory[address]);
+		Flags = Flags & (0xFF - FLAG_C);
+		break;
+
+	case 0x6A: //NOTA, A
+		Registers[REGISTER_A] = ~Registers[REGISTER_A];
+		set_zn_flags(Registers[REGISTER_A]);
 		Flags = Flags & (0xFF - FLAG_C);
 		break;
 
