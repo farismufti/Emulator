@@ -1802,6 +1802,62 @@ void Group_1(BYTE opcode)
 		Flags = Flags & (0xFF - FLAG_C);
 		break;
 
+	case 0x4B: //ROL Absolute
+		address = getAddressAbs();
+
+		if (Memory[address] >= 0 && address < MEMORY_SIZE)
+		{
+			Memory[address] = (Memory[address] << 1);
+			set_zn_flags(Memory[address]);
+		}
+		break;
+
+	case 0x5B: //ROL abs,X
+		address = getAddressAbsX();
+
+		if (Memory[address] >= 0 && address < MEMORY_SIZE)
+		{
+			Memory[address] = (Memory[address] << 1);
+			set_zn_flags(Memory[address]);
+		}
+		break;
+
+	case 0x6B: //ROLA
+		if (Registers[REGISTER_A] >= 0 && REGISTER_A < MEMORY_SIZE)
+		{
+			Registers[REGISTER_A] = (Registers[REGISTER_A] << 1);
+			set_zn_flags(Registers[REGISTER_A]);
+		}
+		break;
+
+	case 0x4C: //ROR Absolute
+		address = getAddressAbs();
+
+		if (Memory[address] >= 0 && address < MEMORY_SIZE)
+		{
+			Memory[address] = (Memory[address] >> 1);
+			set_zn_flags(Memory[address]);
+		}
+		break;
+
+	case 0x5C: //ROR abs,X
+		address = getAddressAbsX();
+
+		if (Memory[address] >= 0 && address < MEMORY_SIZE)
+		{
+			Memory[address] = (Memory[address] >> 1);
+			set_zn_flags(Memory[address]);
+		}
+		break;
+
+	case 0x6C: //RORA
+		if (Registers[REGISTER_A] >= 0 && REGISTER_A < MEMORY_SIZE)
+		{
+			Registers[REGISTER_A] = (Registers[REGISTER_A] >> 1);
+			set_zn_flags(Registers[REGISTER_A]);
+		}
+		break;
+
 	case 0x95: //XOR, A-B
 		Registers[REGISTER_A] = Registers[REGISTER_A] ^ Registers[REGISTER_B];
 		set_zn_flags(Registers[REGISTER_A]);
