@@ -507,6 +507,41 @@ BYTE negate(BYTE inReg)
 	return (BYTE)result;
 }
 
+void IOR(BYTE reg1, BYTE reg2)
+{
+	Registers[REGISTER_A] = reg1 | reg2;
+	set_zn_flags(Registers[REGISTER_A]);
+}
+
+void XOR(BYTE reg1, BYTE reg2)
+{
+	Registers[REGISTER_A] = reg1 ^ reg2;
+	set_zn_flags(Registers[REGISTER_A]);
+}
+
+void AND(BYTE reg1, BYTE reg2)
+{
+	Registers[REGISTER_A] = reg1 & reg2;
+	set_zn_flags(Registers[REGISTER_A]);
+}
+
+void BT(BYTE reg1, BYTE reg2)
+{
+	BYTE temp;
+	temp = reg1 & reg2;
+	set_zn_flags(temp);
+}
+
+void MVI(BYTE reg1, BYTE reg2)
+{
+	
+}
+
+void POP(BYTE reg)
+{
+	reg = Memory[0];
+}
+
 void Group_1(BYTE opcode)
 {
 	
@@ -523,7 +558,7 @@ void Group_1(BYTE opcode)
 	BYTE VF;
 	BYTE ZF;
 	BYTE CF;
-	BYTE temp;
+	//BYTE temp;
 
 	if ((Flags & FLAG_N) == FLAG_N)
 	{
@@ -598,8 +633,7 @@ void Group_1(BYTE opcode)
 		if (address >= 0 && address < MEMORY_SIZE)
 		{
 			Memory[address] = Registers[REGISTER_A];
-			set_flag_z(Registers[REGISTER_A]);
-			set_flag_n(Registers[REGISTER_A]);
+			set_zn_flags(Registers[REGISTER_A]);
 			Flags = Flags & (0xFF - FLAG_C);
 		}
 		break;
@@ -1116,35 +1150,35 @@ void Group_1(BYTE opcode)
 		break;
 
 	case 0x12: //POP,A
-		Registers[REGISTER_A] = Memory[0];
+		POP(Registers[REGISTER_A]);
 		break;
 
 	case 0x22: //POP,FL
-		Registers[REGISTER_FL] = Memory[0];
+		POP(Registers[REGISTER_FL]);
 		break;
 
 	case 0x32: //POP,B
-		Registers[REGISTER_B] = Memory[0];
+		POP(Registers[REGISTER_B]);
 		break;
 
 	case 0x42: //POP,C
-		Registers[REGISTER_C] = Memory[0];
+		POP(Registers[REGISTER_C]);
 		break;
 
 	case 0x52: //POP,D
-		Registers[REGISTER_D] = Memory[0];
+		POP(Registers[REGISTER_D]);
 		break;
 
 	case 0x62: //POP,E
-		Registers[REGISTER_E] = Memory[0];
+		POP(Registers[REGISTER_E]);
 		break;
 
 	case 0x72: //POP,L
-		Registers[REGISTER_L] = Memory[0];
+		POP(Registers[REGISTER_L]);
 		break;
 
 	case 0x82: //POP,H
-		Registers[REGISTER_H] = Memory[0];
+		POP(Registers[REGISTER_H]);
 		break;
 
 	case 0x01: //BCC
@@ -1504,73 +1538,59 @@ void Group_1(BYTE opcode)
 		break;
 
 	case 0x94: //AND, A-B
-		Registers[REGISTER_A] = Registers[REGISTER_A] & Registers[REGISTER_B];
-		set_zn_flags(Registers[REGISTER_A]);
+		AND(Registers[REGISTER_A], Registers[REGISTER_B]);
 		break;
 
 	case 0xA4: //AND, A-C
-		Registers[REGISTER_A] = Registers[REGISTER_A] & Registers[REGISTER_C];
-		set_zn_flags(Registers[REGISTER_A]);
+		AND(Registers[REGISTER_A], Registers[REGISTER_C]);
 		break;
 
 	case 0xB4: //AND, A-D
-		Registers[REGISTER_A] = Registers[REGISTER_A] & Registers[REGISTER_D];
-		set_zn_flags(Registers[REGISTER_A]);
+		AND(Registers[REGISTER_A], Registers[REGISTER_D]);
 		break;
 
 	case 0xC4: //AND, A-E
-		Registers[REGISTER_A] = Registers[REGISTER_A] & Registers[REGISTER_E];
-		set_zn_flags(Registers[REGISTER_A]);
+		AND(Registers[REGISTER_A], Registers[REGISTER_E]);
 		break;
 
 	case 0xD4: //AND, A-L
-		Registers[REGISTER_A] = Registers[REGISTER_A] & Registers[REGISTER_L];
-		set_zn_flags(Registers[REGISTER_A]);
+		AND(Registers[REGISTER_A], Registers[REGISTER_L]);
 		break;
 
 	case 0xE4: //AND, A-H
-		Registers[REGISTER_A] = Registers[REGISTER_A] & Registers[REGISTER_H];
-		set_zn_flags(Registers[REGISTER_A]);
+		AND(Registers[REGISTER_A], Registers[REGISTER_H]);
 		break;
 
 	case 0xF4: //AND, A-M
-		Registers[REGISTER_A] = Registers[REGISTER_A] & Registers[REGISTER_M];
-		set_zn_flags(Registers[REGISTER_A]);
+		AND(Registers[REGISTER_A], Registers[REGISTER_M]);
 		break;
 
 	case 0x96: //BT, A-B
-		temp = Registers[REGISTER_A] & Registers[REGISTER_B];
-		set_zn_flags(temp);
+		BT(Registers[REGISTER_A], Registers[REGISTER_B]);
 		break;
 
 	case 0xA6: //BT, A-C
-		temp = Registers[REGISTER_A] & Registers[REGISTER_C];
-		set_zn_flags(temp);
+		BT(Registers[REGISTER_A], Registers[REGISTER_C]);
 		break;
 
 	case 0xB6: //BT, A-D
-		temp = Registers[REGISTER_A] & Registers[REGISTER_D];
-		set_zn_flags(temp);
+		BT(Registers[REGISTER_A], Registers[REGISTER_D]);
 		break;
 
 	case 0xC6: //BT, A-E
-		temp = Registers[REGISTER_A] & Registers[REGISTER_E];
-		set_zn_flags(temp);
+		BT(Registers[REGISTER_A], Registers[REGISTER_E]);
 		break;
 
 	case 0xD6: //BT, A-L
-		temp = Registers[REGISTER_A] & Registers[REGISTER_L];
-		set_zn_flags(temp);
+		BT(Registers[REGISTER_A], Registers[REGISTER_L]);
 		break;
 
 	case 0xE6: //BT, A-H
-		temp = Registers[REGISTER_A] & Registers[REGISTER_H];
-		set_zn_flags(temp);
+		BT(Registers[REGISTER_A], Registers[REGISTER_H]);
 		break;
 
 	case 0xF6: //BT, A-M
-		temp = Registers[REGISTER_A] & Registers[REGISTER_M];
-		set_zn_flags(temp);
+		BT(Registers[REGISTER_A], Registers[REGISTER_M]);
 		break;
 
 	case 0x44: //INC Absolute
@@ -1746,38 +1766,31 @@ void Group_1(BYTE opcode)
 		break;
 
 	case 0x93: //IOR, A-B
-		Registers[REGISTER_A] = Registers[REGISTER_A] | Registers[REGISTER_B];
-		set_zn_flags(Registers[REGISTER_A]);
+		IOR(Registers[REGISTER_A], Registers[REGISTER_B]);
 		break;
 
 	case 0xA3: //IOR, A-C
-		Registers[REGISTER_A] = Registers[REGISTER_A] | Registers[REGISTER_C];
-		set_zn_flags(Registers[REGISTER_A]);
+		IOR(Registers[REGISTER_A], Registers[REGISTER_C]);
 		break;
 
 	case 0xB3: //IOR, A-D
-		Registers[REGISTER_A] = Registers[REGISTER_A] | Registers[REGISTER_D];
-		set_zn_flags(Registers[REGISTER_A]);
+		IOR(Registers[REGISTER_A], Registers[REGISTER_D]);
 		break;
 
 	case 0xC3: //IOR, A-E
-		Registers[REGISTER_A] = Registers[REGISTER_A] | Registers[REGISTER_E];
-		set_zn_flags(Registers[REGISTER_A]);
+		IOR(Registers[REGISTER_A], Registers[REGISTER_E]);
 		break;
 
 	case 0xD3: //IOR, A-L
-		Registers[REGISTER_A] = Registers[REGISTER_A] | Registers[REGISTER_L];
-		set_zn_flags(Registers[REGISTER_A]);
+		IOR(Registers[REGISTER_A], Registers[REGISTER_L]);
 		break;
 
 	case 0xE3: //IOR, A-H
-		Registers[REGISTER_A] = Registers[REGISTER_A] | Registers[REGISTER_H];
-		set_zn_flags(Registers[REGISTER_A]);
+		IOR(Registers[REGISTER_A], Registers[REGISTER_H]);
 		break;
 
 	case 0xF3: //IOR, A-M
-		Registers[REGISTER_A] = Registers[REGISTER_A] | Registers[REGISTER_M];
-		set_zn_flags(Registers[REGISTER_A]);
+		IOR(Registers[REGISTER_A], Registers[REGISTER_M]);
 		break;
 
 	case 0x4A: //NOT Absolute
@@ -1859,38 +1872,31 @@ void Group_1(BYTE opcode)
 		break;
 
 	case 0x95: //XOR, A-B
-		Registers[REGISTER_A] = Registers[REGISTER_A] ^ Registers[REGISTER_B];
-		set_zn_flags(Registers[REGISTER_A]);
+		XOR(Registers[REGISTER_A], Registers[REGISTER_B]);
 		break;
 
 	case 0xA5: //XOR, A-C
-		Registers[REGISTER_A] = Registers[REGISTER_A] ^ Registers[REGISTER_C];
-		set_zn_flags(Registers[REGISTER_A]);
+		XOR(Registers[REGISTER_A], Registers[REGISTER_C]);
 		break;
 
 	case 0xB5: //XOR, A-D
-		Registers[REGISTER_A] = Registers[REGISTER_A] ^ Registers[REGISTER_D];
-		set_zn_flags(Registers[REGISTER_A]);
+		XOR(Registers[REGISTER_A], Registers[REGISTER_D]);
 		break;
 
 	case 0xC5: //XOR, A-E
-		Registers[REGISTER_A] = Registers[REGISTER_A] ^ Registers[REGISTER_E];
-		set_zn_flags(Registers[REGISTER_A]);
+		XOR(Registers[REGISTER_A], Registers[REGISTER_E]);
 		break;
 
 	case 0xD5: //XOR, A-L
-		Registers[REGISTER_A] = Registers[REGISTER_A] ^ Registers[REGISTER_L];
-		set_zn_flags(Registers[REGISTER_A]);
+		XOR(Registers[REGISTER_A], Registers[REGISTER_L]);
 		break;
 
 	case 0xE5: //XOR, A-H
-		Registers[REGISTER_A] = Registers[REGISTER_A] ^ Registers[REGISTER_H];
-		set_zn_flags(Registers[REGISTER_A]);
+		XOR(Registers[REGISTER_A], Registers[REGISTER_H]);
 		break;
 
 	case 0xF5: //XOR, A-M
-		Registers[REGISTER_A] = Registers[REGISTER_A] ^ Registers[REGISTER_M];
-		set_zn_flags(Registers[REGISTER_A]);
+		XOR(Registers[REGISTER_A], Registers[REGISTER_M]);
 		break;
 
 	case 0x25: //ADI
