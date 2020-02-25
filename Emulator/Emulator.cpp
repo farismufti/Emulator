@@ -1441,6 +1441,42 @@ void Group_1(BYTE opcode)
 		set_zn_flags(Registers[REGISTER_A]);
 		break;
 
+	case 0x46: //RCR Absolute
+		address = getAddressAbs();
+
+		if (Memory[address] >= 0 && address < MEMORY_SIZE)
+		{
+			if ((Memory[address] & 0x01) == 0x01)
+			{
+				Flags = Flags | FLAG_C;
+			}
+			else
+			{
+				Flags = Flags & (0xFF - FLAG_C);
+			}
+			Memory[address] = (Memory[address] >> 1);
+			set_zn_flags(Memory[address]);
+		}
+		break;
+
+	case 0x56: //RCR abs,X
+		address = getAddressAbsX();
+
+		if (Memory[address] >= 0 && address < MEMORY_SIZE)
+		{
+			if ((Memory[address] & 0x01) == 0x01)
+			{
+				Flags = Flags | FLAG_C;
+			}
+			else
+			{
+				Flags = Flags & (0xFF - FLAG_C);
+			}
+			Memory[address] = (Memory[address] >> 1);
+			set_zn_flags(Memory[address]);
+		}
+		break;
+
 	case 0x1C: //INX *** was index register,, dex
 		Registers[REGISTER_X]++;
 		set_flag_z(Registers[REGISTER_X]);
