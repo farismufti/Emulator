@@ -1,9 +1,9 @@
 /*
-Author: Faris Mufti (19044237)
-Created 06 Feb. 2020
-Revised: 27 Feb. 2020
-Description: Chimera 8080 Microprocessor Emulator
-User advice: none
+*Author: Faris Mufti (19044237)
+*Created 06 Feb. 2020
+*Revised: 27 Feb. 2020 - Fixed some instructions and added comments
+*Description: Chimera 8080 Microprocessor Emulator
+*User advice: none
 */
 
 #include "stdafx.h"
@@ -378,6 +378,14 @@ char opcode_mneumonics[][14] =
 ////////////////////////////////////////////////////////////////////////////////
 //                           Simulator/Emulator (Start)                       //
 ////////////////////////////////////////////////////////////////////////////////
+
+/*
+* Function: fetch
+* Description: 
+* Parameters:
+* Returns:
+* Warnings:
+*/
 BYTE fetch()
 {
 	BYTE byte = 0;
@@ -395,7 +403,14 @@ BYTE fetch()
 	return byte;
 }
 
-void set_flag_n(BYTE inReg) //Sets negative flag
+/*
+* Function: set_flag_n
+* Description: Sets flag N (negative flag) depending on the value given in a register.
+* Parameters: inReg (BYTE) - the register that will be used to set the flag.
+* Returns: none (void)
+* Warnings: none
+*/
+void set_flag_n(BYTE inReg)
 {
 	BYTE reg;
 	reg = inReg;
@@ -410,7 +425,14 @@ void set_flag_n(BYTE inReg) //Sets negative flag
 	}
 }
 
-void set_flag_v(BYTE in1, BYTE in2, BYTE out1) //Sets overflow flag
+/*
+* Function: set_flag_v
+* Description: Sets flag V (overflow flag) depending on the value given in a register.
+* Parameters: inReg (BYTE) - the register that will be used to set the flag.
+* Returns: none (void)
+* Warnings: none
+*/
+void set_flag_v(BYTE in1, BYTE in2, BYTE out1)
 {
 	BYTE reg1in;
 	BYTE reg2in;
@@ -431,7 +453,14 @@ void set_flag_v(BYTE in1, BYTE in2, BYTE out1) //Sets overflow flag
 	}
 }
 
-void set_flag_z(BYTE inReg) //Sets zero flag
+/*
+* Function: set_flag_z
+* Description: Sets flag Z (zero flag) depending on the value given in a register.
+* Parameters: inReg (BYTE) - the register that will be used to set the flag.
+* Returns: none (void)
+* Warnings: none
+*/
+void set_flag_z(BYTE inReg)
 {
 	BYTE reg; 
 	reg = inReg; 
@@ -446,13 +475,27 @@ void set_flag_z(BYTE inReg) //Sets zero flag
 	}
 }
 
-void set_zn_flags(WORD result) //Sets the zero and negative flags
+/*
+* Function: set_zn_flags
+* Description: Sets flags N and Z depending on the value given in a register.
+* Parameters: result (WORD) - the register that will be used to set the flags.
+* Returns: none (void)
+* Warnings: none
+*/
+void set_zn_flags(WORD result)
 {
 	set_flag_z(result);
 	set_flag_n(result);
 }
 
-WORD getAddressAbs() //Returns absolute memory address
+/*
+* Function: getAddressAbs
+* Description: Gets the absolute memory address.
+* Parameters: none
+* Returns: address (WORD)
+* Warnings: none
+*/
+WORD getAddressAbs()
 {
 	BYTE HB = 0;
 	BYTE LB = 0;
@@ -463,6 +506,13 @@ WORD getAddressAbs() //Returns absolute memory address
 	return address; 
 }
 
+/*
+* Function: getAddressAbsX
+* Description: Gets the indexed absolute memory address.
+* Parameters: none
+* Returns: address (WORD)
+* Warnings: none
+*/
 WORD getAddressAbsX() //Returns indexed absolute memory address
 {
 	BYTE HB = 0;
@@ -475,12 +525,13 @@ WORD getAddressAbsX() //Returns indexed absolute memory address
 	return address;
 }
 
-/*void push8(BYTE inReg)
-{
-	StackPointer--;
-	Memory[StackPointer] = inReg;
-} */
-
+/*
+* Function: pop8
+* Description: ***
+* Parameters: none
+* Returns: reg (BYTE)
+* Warnings: none
+*/
 BYTE pop8()
 {
 	BYTE reg;
@@ -489,17 +540,13 @@ BYTE pop8()
 	return reg;
 }
 
-/*void push16(WORD inReg)
-{
-	BYTE LB, HB;
-	LB = (BYTE)inReg;
-	HB = (BYTE)(inReg >> 8);
-	StackPointer--;
-	Memory[StackPointer] = HB;
-	StackPointer--;
-	Memory[StackPointer] = LB;
-} */
-
+/*
+* Function: negate
+* Description: Inverts the values of the inputted register.
+* Parameters: inReg (BYTE)
+* Returns: result (BYTE)
+* Warnings: none
+*/
 BYTE negate(BYTE inReg)
 {
 	WORD result = ~inReg + 1;
@@ -507,24 +554,55 @@ BYTE negate(BYTE inReg)
 	return (BYTE)result;
 }
 
+/*
+* Function: IOR
+* Description: An inclusive OR is performed with two registers, and the value is set to register A,
+               the Z and N flags are then set to register A.
+* Parameters: reg1 (BYTE), reg2 (BYTE)
+* Returns: none (void)
+* Warnings: none
+*/
 void IOR(BYTE reg1, BYTE reg2)
 {
 	Registers[REGISTER_A] = reg1 | reg2;
 	set_zn_flags(Registers[REGISTER_A]);
 }
 
+/*
+* Function: XOR
+* Description: An exlusive OR is performed with two registers, and the value is set to register A,
+			   the Z and N flags are then set to register A.
+* Parameters: reg1 (BYTE), reg2 (BYTE)
+* Returns: none (void)
+* Warnings: none
+*/
 void XOR(BYTE reg1, BYTE reg2)
 {
 	Registers[REGISTER_A] = reg1 ^ reg2;
 	set_zn_flags(Registers[REGISTER_A]);
 }
 
+/*
+* Function: IOR
+* Description: An AND is performed with two registers, and the value is set to register A,
+               the Z and N flags are then set to register A.
+* Parameters: reg1 (BYTE), reg2 (BYTE)
+* Returns: none (void)
+* Warnings: none
+*/
 void AND(BYTE reg1, BYTE reg2)
 {
 	Registers[REGISTER_A] = reg1 & reg2;
 	set_zn_flags(Registers[REGISTER_A]);
 }
 
+/*
+* Function: BT
+* Description: Values of the register are tested with the accumilator.
+* Parameters: reg1 (BYTE), reg2 (BYTE)
+* Returns: none (void)
+* Warnings: none
+*/
 void BT(BYTE reg1, BYTE reg2)
 {
 	BYTE temp;
@@ -532,6 +610,13 @@ void BT(BYTE reg1, BYTE reg2)
 	set_zn_flags(temp);
 }
 
+/*
+* Function: POP
+* Description: Pops the first bit of the memory (stack) into the inputted register.
+* Parameters: reg (BYTE)
+* Returns: none (void)
+* Warnings: none
+*/
 void POP(BYTE reg)
 {
 	reg = Memory[0];
@@ -549,12 +634,13 @@ void Group_1(BYTE opcode)
 	BYTE param2;
 	WORD offset;
 	BYTE saved_flags;
-	BYTE NF;
-	BYTE VF;
-	BYTE ZF;
-	BYTE CF;
-	BYTE temp;   //---> inside of method
+	BYTE NF; //Flag N
+	BYTE VF; //Flag V
+	BYTE ZF; //Flag Z
+	BYTE CF; //Flag C
+	BYTE temp;
 
+	//Variables from above are used to represent a flag being set or cleared
 	if ((Flags & FLAG_N) == FLAG_N)
 	{
 		NF = 1;
@@ -595,9 +681,9 @@ void Group_1(BYTE opcode)
 
 	case 0xB7: //LD Immidiate
 		data = fetch();
-		Registers[REGISTER_A] = data;
-		set_zn_flags(Registers[REGISTER_A]);
-		Flags = Flags & (0xFF - FLAG_C);
+		Registers[REGISTER_A] = data; //Strores data into register A
+		set_zn_flags(Registers[REGISTER_A]); //Sets Z and N flags to register A
+		Flags = Flags & (0xFF - FLAG_C); //Clears carry flag
 		break;
 
 	case 0xC7: //LD Absolute
@@ -625,11 +711,11 @@ void Group_1(BYTE opcode)
 	case 0x10: //ST Absolute
 		address = getAddressAbs();
 
-		if (address >= 0 && address < MEMORY_SIZE)
+		if (address >= 0 && address < MEMORY_SIZE) //Check if address held in memory is valid
 		{
-			Memory[address] = Registers[REGISTER_A];
-			set_zn_flags(Registers[REGISTER_A]);
-			Flags = Flags & (0xFF - FLAG_C);
+			Memory[address] = Registers[REGISTER_A]; //Stores register A into memory
+			set_zn_flags(Registers[REGISTER_A]); //Set Z and N flags to register A
+			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
 		break;
 
@@ -644,11 +730,11 @@ void Group_1(BYTE opcode)
 		}
 		break;
 
-	case 0x2A: //MVI Immidiate, B
+	case 0x2A: //MVI Immidiate, B   (Loads memory onto a register)
 		data = fetch();
-		Registers[REGISTER_B] = data;
-		set_zn_flags(Registers[REGISTER_B]);
-		Flags = Flags & (0xFF - FLAG_C);
+		Registers[REGISTER_B] = data; //Load data onto register
+		set_zn_flags(Registers[REGISTER_B]); //Set Z and N flags to the register
+		Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		break;
 
 	case 0x2B: //MVI Immidiate, C
@@ -686,18 +772,18 @@ void Group_1(BYTE opcode)
 		Flags = Flags & (0xFF - FLAG_C);
 		break;
 
-	case 0x4F: //LODS Immidiate
+	case 0x4F: //LODS Immidiate  (Loads memory onto stack pointer)
 		data = fetch();
-		StackPointer = data << 8, StackPointer = StackPointer + fetch();
+		StackPointer = data << 8, StackPointer = StackPointer + fetch(); 
 		break;
 
 	case 0x5F: //LODS Absolute
 		address = getAddressAbs();
 
-		if (address >= 0 && address < MEMORY_SIZE - 1)
+		if (address >= 0 && address < MEMORY_SIZE - 1) //Checks if memory address is valid
 		{
-			StackPointer = (WORD)Memory[address] << 8;
-			StackPointer = StackPointer + Memory[address + 1];
+			StackPointer = (WORD)Memory[address] << 8; //StackPointer set to memory shifted 8 left
+			StackPointer = StackPointer + Memory[address + 1]; //Memory at value after address set into StackPointer
 		}
 		set_zn_flags(Memory[address]);
 		Flags = Flags & (0xFF - FLAG_C);
@@ -717,7 +803,7 @@ void Group_1(BYTE opcode)
 
 	case 0x4E: //LDX Immidiate
 		data = fetch();
-		Registers[REGISTER_X] = data;
+		Registers[REGISTER_X] = data; //Load memory into register X
 		set_zn_flags(Registers[REGISTER_X]);
 		Flags = Flags & (0xFF - FLAG_C);
 		break;
@@ -738,7 +824,7 @@ void Group_1(BYTE opcode)
 
 	case 0x50: //STOX Absolute
 		data = fetch();
-		data = Registers[REGISTER_X];
+		data = Registers[REGISTER_X]; //Load register X into memory
 		set_zn_flags(Registers[REGISTER_X]);
 		Flags = Flags & (0xFF - FLAG_C);
 		break;
@@ -750,12 +836,11 @@ void Group_1(BYTE opcode)
 		Flags = Flags & (0xFF - FLAG_C);
 		break;
 
-		//Flags
-	case 0x90: // ADC A-B
+	case 0x90: // ADC A-B   (Register added to accumilator with carry)
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_B];
 		temp_word = (WORD)Registers[REGISTER_A] + (WORD)Registers[REGISTER_B];
-		if ((Flags & FLAG_C) != 0)
+		if ((Flags & FLAG_C) != 0) //Check if carry flag is not clear
 		{
 			temp_word++;
 		}
@@ -905,7 +990,7 @@ void Group_1(BYTE opcode)
 		Registers[REGISTER_A] = (BYTE)temp_word;
 		break;
 
-	case 0x92: //CMP, A-B
+	case 0x92: //CMP, A-B  (Regsiter compared to accumulator)
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_B];
 		temp_word = (WORD)param1 - (WORD)param2;
@@ -1024,43 +1109,42 @@ void Group_1(BYTE opcode)
 		set_flag_v(param1, -param2, temp_word);
 		break;
 
-	case 0x75: //TSA
-		Registers[REGISTER_A] = Flags;
+	case 0x75: //TSA  (Sets accumulator values to status register)
+		Registers[REGISTER_A] = Flags; 
 		break;
 
-	case 0x74: //TAS
+	case 0x74: //TAS  (Sets status register to accumulator)
 		Flags = Registers[REGISTER_A];
 		break;
 
-	case 0x15: //CLC
+	case 0x15: //CLC  (Clear carry flag)
 		Flags = Flags & 0xFE;
 		break;
 
-	case 0x16: //SEC
+	case 0x16: //SEC (Set carry flag)
 		Flags = Flags | 0x01;
 		break;
 
-	case 0x17: //CLI
-		Flags = Flags & 0x7F;
+	case 0x17: //CLI (Clear interrup flag)
+		Flags = Flags & 0x7F; 
 		break;
 
-	case 0x18: //STI
+	case 0x18: //STI  (Set interrupt flag)
 		Flags = Flags | 0x80;
 		break;
 
-	case 0x19: //SEV
+	case 0x19: //SEV (Set overflow flag)
 		Flags = Flags | 0x10;
 		break;
 
-	case 0x1A: //CLV
+	case 0x1A: //CLV (Clear overflow flag)
 		Flags = Flags & 0xEF;
 		break;
 
-		//Stack
-	case 0x11: //PSH,A
-		if ((StackPointer >= 1) && (StackPointer < MEMORY_SIZE))
+	case 0x11: //PSH,A  (Pushes register onto the stack)
+		if ((StackPointer >= 1) && (StackPointer < MEMORY_SIZE)) //Check if StackPointer value is valid
 		{
-			Memory[StackPointer] = Registers[REGISTER_A];
+			Memory[StackPointer] = Registers[REGISTER_A]; //Push register into memory
 			StackPointer--;
 		}
 		break;
