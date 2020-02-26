@@ -1525,7 +1525,7 @@ void Group_1(BYTE opcode)
 	case 0x66: //RCRA
 		saved_flags = Flags;
 
-		if ((Registers[REGISTER_A] & 0x80) == 0x80)
+		if ((Registers[REGISTER_A] & 0x01) == 0x01)
 		{
 			Flags = Flags | FLAG_C;
 		}
@@ -1534,7 +1534,7 @@ void Group_1(BYTE opcode)
 			Flags = Flags & (0xFF - FLAG_C);
 		}
 
-		Registers[REGISTER_A] = (Registers[REGISTER_A] >> 1) & 0xFE;
+		Registers[REGISTER_A] = (Registers[REGISTER_A] >> 1) & 0x7F;
 
 		if ((saved_flags & FLAG_C) == FLAG_C)
 		{
@@ -1543,7 +1543,7 @@ void Group_1(BYTE opcode)
 		set_zn_flags(Registers[REGISTER_A]);
 		break;
 
-	case 0x1C: //INX *** was index register,, dex
+	case 0x1C: //INX
 		Registers[REGISTER_X]++;
 		set_flag_z(Registers[REGISTER_X]);
 		break;
