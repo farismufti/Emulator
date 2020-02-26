@@ -1354,7 +1354,7 @@ void Group_1(BYTE opcode)
 	case 0x0C: //BHI
 		LB = fetch();
 
-		if ((CF | ZF) == 1)
+		if ((CF | ZF) == 0)
 		{
 			offset = (WORD)LB;
 
