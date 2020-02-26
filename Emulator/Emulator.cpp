@@ -532,11 +532,6 @@ void BT(BYTE reg1, BYTE reg2)
 	set_zn_flags(temp);
 }
 
-void MVI(BYTE reg1, BYTE reg2)
-{
-	
-}
-
 void POP(BYTE reg)
 {
 	reg = Memory[0];
@@ -558,7 +553,7 @@ void Group_1(BYTE opcode)
 	BYTE VF;
 	BYTE ZF;
 	BYTE CF;
-	//BYTE temp;   ---> put inside of method
+	BYTE temp;   //---> inside of method
 
 	if ((Flags & FLAG_N) == FLAG_N)
 	{
@@ -742,7 +737,7 @@ void Group_1(BYTE opcode)
 		break;
 
 		//Flags
-	case 0x90: // ADC A,B
+	case 0x90: // ADC A-B
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_B];
 		temp_word = (WORD)Registers[REGISTER_A] + (WORD)Registers[REGISTER_B];
@@ -786,7 +781,7 @@ void Group_1(BYTE opcode)
 		Registers[REGISTER_A] = (BYTE)temp_word;
 		break;
 
-	case 0xB0: // ADC A,D
+	case 0xB0: // ADC A-D
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_D];
 		temp_word = (WORD)Registers[REGISTER_A] + (WORD)Registers[REGISTER_D];
@@ -808,7 +803,7 @@ void Group_1(BYTE opcode)
 		Registers[REGISTER_A] = (BYTE)temp_word;
 		break;
 
-	case 0xC0: // ADC A,E
+	case 0xC0: // ADC A-E
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_E];
 		temp_word = (WORD)Registers[REGISTER_A] + (WORD)Registers[REGISTER_E];
@@ -830,7 +825,7 @@ void Group_1(BYTE opcode)
 		Registers[REGISTER_A] = (BYTE)temp_word;
 		break;
 
-	case 0xD0: // ADC A,L
+	case 0xD0: // ADC A-L
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_L];
 		temp_word = (WORD)Registers[REGISTER_A] + (WORD)Registers[REGISTER_L];
@@ -852,7 +847,7 @@ void Group_1(BYTE opcode)
 		Registers[REGISTER_A] = (BYTE)temp_word;
 		break;
 
-	case 0xE0: // ADC A,H
+	case 0xE0: // ADC A-H
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_H];
 		temp_word = (WORD)Registers[REGISTER_A] + (WORD)Registers[REGISTER_H];
@@ -874,7 +869,7 @@ void Group_1(BYTE opcode)
 		Registers[REGISTER_A] = (BYTE)temp_word;
 		break;
 
-	case 0xF0: // ADC A,M
+	case 0xF0: // ADC A-M
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_M];
 		temp_word = (WORD)Registers[REGISTER_A] + (WORD)Registers[REGISTER_M];
@@ -1708,6 +1703,7 @@ void Group_1(BYTE opcode)
 		set_flag_v(param1, -param2, temp_word);
 		Registers[REGISTER_A] = (BYTE)temp_word;
 		break;
+		
 
 	case 0xD1: //SBC, A-L
 		param1 = Registers[REGISTER_A];
