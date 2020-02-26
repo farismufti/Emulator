@@ -558,7 +558,7 @@ void Group_1(BYTE opcode)
 	BYTE VF;
 	BYTE ZF;
 	BYTE CF;
-	//BYTE temp;
+	//BYTE temp;   ---> put inside of method
 
 	if ((Flags & FLAG_N) == FLAG_N)
 	{
@@ -740,7 +740,6 @@ void Group_1(BYTE opcode)
 		data = fetch();
 		data = Registers[REGISTER_X];
 		break;
-
 
 		//Flags
 	case 0x90: // ADC A,B
@@ -1477,7 +1476,7 @@ void Group_1(BYTE opcode)
 
 	case 0x46: //RCR Absolute
 		address = getAddressAbs();
-
+		saved_flags = Flags;
 		if (Memory[address] >= 0 && address < MEMORY_SIZE)
 		{
 			if ((Memory[address] & 0x01) == 0x01)
@@ -1488,13 +1487,20 @@ void Group_1(BYTE opcode)
 			{
 				Flags = Flags & (0xFF - FLAG_C);
 			}
+			
 			Memory[address] = (Memory[address] >> 1);
 			set_zn_flags(Memory[address]);
+
+			if ((saved_flags & FLAG_C) == FLAG_C)
+			{
+				Memory[address] = Memory[address] | 0x01;
+			}
 		}
 		break;
 
 	case 0x56: //RCR abs,X
 		address = getAddressAbsX();
+		saved_flags = Flags;
 
 		if (Memory[address] >= 0 && address < MEMORY_SIZE)
 		{
@@ -1508,13 +1514,18 @@ void Group_1(BYTE opcode)
 			}
 			Memory[address] = (Memory[address] >> 1);
 			set_zn_flags(Memory[address]);
+
+			if ((saved_flags & FLAG_C) == FLAG_C)
+			{
+				Memory[address] = Memory[address] | 0x01;
+			}
 		}
 		break;
 
 	case 0x66: //RCRA
 		saved_flags = Flags;
 
-		if ((Registers[REGISTER_A] & 0x01) == 0x01)
+		if ((Registers[REGISTER_A] & 0x80) == 0x80)
 		{
 			Flags = Flags | FLAG_C;
 		}
@@ -1522,8 +1533,8 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C);
 		}
-		
-		Registers[REGISTER_A] = (Registers[REGISTER_A] >> 1) & 0x7F;
+
+		Registers[REGISTER_A] = (Registers[REGISTER_A] >> 1) & 0xFE;
 
 		if ((saved_flags & FLAG_C) == FLAG_C)
 		{
