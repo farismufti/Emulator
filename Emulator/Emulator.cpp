@@ -475,11 +475,11 @@ WORD getAddressAbsX() //Returns indexed absolute memory address
 	return address;
 }
 
-void push8(BYTE inReg)
+/*void push8(BYTE inReg)
 {
 	StackPointer--;
 	Memory[StackPointer] = inReg;
-}
+} */
 
 BYTE pop8()
 {
@@ -489,7 +489,7 @@ BYTE pop8()
 	return reg;
 }
 
-void push16(WORD inReg)
+/*void push16(WORD inReg)
 {
 	BYTE LB, HB;
 	LB = (BYTE)inReg;
@@ -498,7 +498,7 @@ void push16(WORD inReg)
 	Memory[StackPointer] = HB;
 	StackPointer--;
 	Memory[StackPointer] = LB;
-}
+} */
 
 BYTE negate(BYTE inReg)
 {
@@ -699,6 +699,8 @@ void Group_1(BYTE opcode)
 			StackPointer = (WORD)Memory[address] << 8;
 			StackPointer = StackPointer + Memory[address + 1];
 		}
+		set_zn_flags(Memory[address]);
+		Flags = Flags & (0xFF - FLAG_C);
 		break;
 
 	case 0x6F: //LODS abs, X
@@ -709,31 +711,43 @@ void Group_1(BYTE opcode)
 			StackPointer = (WORD)Memory[address] << 8;
 			StackPointer = StackPointer + Memory[address + 1];
 		}
+		set_zn_flags(Memory[address]);
+		Flags = Flags & (0xFF - FLAG_C);
 		break;
 
 	case 0x4E: //LDX Immidiate
 		data = fetch();
 		Registers[REGISTER_X] = data;
+		set_zn_flags(Registers[REGISTER_X]);
+		Flags = Flags & (0xFF - FLAG_C);
 		break;
 
 	case 0x5E: //LDX Absolute
 		data = fetch();
 		Registers[REGISTER_X] = data;
+		set_zn_flags(Registers[REGISTER_X]);
+		Flags = Flags & (0xFF - FLAG_C);
 		break;
 
 	case 0x6E: //LDX abs,X
 		data = fetch();
 		Registers[REGISTER_X] = data;
+		set_zn_flags(Registers[REGISTER_X]);
+		Flags = Flags & (0xFF - FLAG_C);
 		break;
 
 	case 0x50: //STOX Absolute
 		data = fetch();
 		data = Registers[REGISTER_X];
+		set_zn_flags(Registers[REGISTER_X]);
+		Flags = Flags & (0xFF - FLAG_C);
 		break;
 
 	case 0x60: //STOX abs,X
 		data = fetch();
 		data = Registers[REGISTER_X];
+		set_zn_flags(Registers[REGISTER_X]);
+		Flags = Flags & (0xFF - FLAG_C);
 		break;
 
 		//Flags
@@ -1125,19 +1139,19 @@ void Group_1(BYTE opcode)
 		ProgramCounter = address;
 		break;
 
-	case 0x0E: //RTN ***
+	case 0x0E: //RTN
 		LB = pop8();
 		HB = pop8();
 		ProgramCounter = ((WORD)HB << 8) + LB;
 		break;
 
-	case 0x00: //BRA Relative
+	case 0x00: //BRA
 		LB = fetch();
 		offset = (WORD)LB;
 
 		if ((offset & 0x80) != 0)
 		{
-			offset += 0xFF00;  //offset = offset + 0xFF00
+			offset = offset + 0xFF00;
 		}
 		address = ProgramCounter + offset;
 		ProgramCounter = address;
@@ -1319,7 +1333,7 @@ void Group_1(BYTE opcode)
 	case 0x0A: //BLE
 		LB = fetch();
 
-		if ((ZF | NF ^ VF) == 1) //***Check if brackets are needed***
+		if ((ZF | NF ^ VF) == 1)
 		{
 			offset = (WORD)LB;
 
@@ -1611,7 +1625,7 @@ void Group_1(BYTE opcode)
 		set_zn_flags(Memory[address]);
 		break;
 
-	case 0x1B: //DEX ***
+	case 0x1B: //DEX
 		Registers[REGISTER_X]--;
 		set_flag_z(Registers[REGISTER_X]);
 		break;
@@ -1801,7 +1815,6 @@ void Group_1(BYTE opcode)
 
 	case 0x4A: //NOT Absolute
 		address = getAddressAbs();
-		
 		Memory[address] = ~Memory[address];
 		set_zn_flags(Memory[address]);
 		Flags = Flags & (0xFF - FLAG_C);
@@ -1809,7 +1822,6 @@ void Group_1(BYTE opcode)
 	
 	case 0x5A: ///NOT abs,X
 		address = getAddressAbsX();
-
 		Memory[address] = ~Memory[address];
 		set_zn_flags(Memory[address]);
 		Flags = Flags & (0xFF - FLAG_C);
@@ -1855,8 +1867,8 @@ void Group_1(BYTE opcode)
 		if (Memory[address] >= 0 && address < MEMORY_SIZE)
 		{
 			Memory[address] = (Memory[address] >> 1);
-			set_zn_flags(Memory[address]);
 		}
+		set_zn_flags(Memory[address]);
 		break;
 
 	case 0x5C: //ROR abs,X
@@ -1865,16 +1877,16 @@ void Group_1(BYTE opcode)
 		if (Memory[address] >= 0 && address < MEMORY_SIZE)
 		{
 			Memory[address] = (Memory[address] >> 1);
-			set_zn_flags(Memory[address]);
 		}
+		set_zn_flags(Memory[address]);
 		break;
 
 	case 0x6C: //RORA
 		if (Registers[REGISTER_A] >= 0 && REGISTER_A < MEMORY_SIZE)
 		{
 			Registers[REGISTER_A] = (Registers[REGISTER_A] >> 1);
-			set_zn_flags(Registers[REGISTER_A]);
 		}
+		set_zn_flags(Registers[REGISTER_A]);
 		break;
 
 	case 0x95: //XOR, A-B
@@ -2118,22 +2130,6 @@ void Group_1(BYTE opcode)
 
 	case 0x1d: //NOP
 		halt = true;
-		break;
-
-	case 0x85: //SWI
-		Flags = Flags | FLAG_I;
-		push8(Registers[REGISTER_A]);
-		push8(Registers[REGISTER_B]);
-		push16(ProgramCounter);
-		push8(Registers[REGISTER_C]);
-		push8(Registers[REGISTER_D]);
-		push8(Flags);
-		break;
-
-	case 0x86: //RTI *****
-		LB = pop8();
-		HB = pop8();
-		ProgramCounter = ((WORD)HB << 8) + LB;
 		break;
 	}
 }
