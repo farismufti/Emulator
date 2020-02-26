@@ -1441,7 +1441,7 @@ void Group_1(BYTE opcode)
 
 			if ((offset & 0x80) != 0)
 			{
-				offset += 0xFF00; //offset = offset + 0xFF00
+				offset = offset + 0xFF00;
 			}
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
@@ -1457,7 +1457,7 @@ void Group_1(BYTE opcode)
 
 			if ((offset & 0x80) != 0)
 			{
-				offset += 0xFF00; //offset = offset + 0xFF00
+				offset = offset + 0xFF00;
 			}
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
