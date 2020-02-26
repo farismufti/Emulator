@@ -1750,7 +1750,6 @@ void Group_1(BYTE opcode)
 		break;
 
 	case 0xF1: //SBC, A-M
-		address = (WORD)Registers[REGISTER_H] << 8 + Registers[REGISTER_L];
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_M];
 		temp_word = (WORD)Registers[REGISTER_A] - (WORD)Registers[REGISTER_M];
