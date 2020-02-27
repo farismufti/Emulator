@@ -513,7 +513,7 @@ WORD getAddressAbs()
 * Returns: address (WORD)
 * Warnings: none
 */
-WORD getAddressAbsX() //Returns indexed absolute memory address
+WORD getAddressAbsX()
 {
 	BYTE HB = 0;
 	BYTE LB = 0;
@@ -527,7 +527,7 @@ WORD getAddressAbsX() //Returns indexed absolute memory address
 
 /*
 * Function: pop8
-* Description: ***
+* Description: Returns the byte at the StackPointer value in memory
 * Parameters: none
 * Returns: reg (BYTE)
 * Warnings: none
@@ -583,7 +583,7 @@ void XOR(BYTE reg1, BYTE reg2)
 }
 
 /*
-* Function: IOR
+* Function: AND
 * Description: An AND is performed with two registers, and the value is set to register A,
                the Z and N flags are then set to register A.
 * Parameters: reg1 (BYTE), reg2 (BYTE)
@@ -1205,7 +1205,7 @@ void Group_1(BYTE opcode)
 		}
 		break;
 
-	case 0xFA: //JMP Absolute
+	case 0xFA: //JMP Absolute  (Load memory onto program counter)
 		address = getAddressAbs();
 		ProgramCounter = address;
 		break;
@@ -1213,7 +1213,7 @@ void Group_1(BYTE opcode)
 	case 0x33: //JPR Absolute
 		address = getAddressAbs();
 		
-		if ((StackPointer >= 2) && (StackPointer < MEMORY_SIZE))
+		if ((StackPointer >= 0) && (StackPointer < MEMORY_SIZE)) //Check if StackPointer value is valid
 		{
 			Memory[StackPointer] = (BYTE)(ProgramCounter & 0xFF);
 			StackPointer--;
@@ -1223,13 +1223,13 @@ void Group_1(BYTE opcode)
 		ProgramCounter = address;
 		break;
 
-	case 0x0E: //RTN
-		LB = pop8();
-		HB = pop8();
-		ProgramCounter = ((WORD)HB << 8) + LB;
+	case 0x0E: //RTN  (Continue running program after subroutine or interrupt)
+		LB = pop8(); //Set low byte memory value pointed at by StackPointer
+		HB = pop8(); //Set high byte memory value pointed at by StackPointer
+		ProgramCounter = ((WORD)HB << 8) + LB; //Set program counter to high and low byte
 		break;
 
-	case 0x00: //BRA
+	case 0x00: //BRA  (Always branch)
 		LB = fetch();
 		offset = (WORD)LB;
 
@@ -1273,10 +1273,10 @@ void Group_1(BYTE opcode)
 		POP(Registers[REGISTER_H]);
 		break;
 
-	case 0x01: //BCC
+	case 0x01: //BCC  (branch on carry flag cleared, set to zero)
 		LB = fetch();
 
-		if((Flags & FLAG_C) == 0)
+		if((Flags & FLAG_C) == 0) //Check if flag is cleared
 		{
 			offset = (WORD)LB;
 
@@ -1289,10 +1289,10 @@ void Group_1(BYTE opcode)
 		}
 		break;
 
-	case 0x02: //BCS
+	case 0x02: //BCS  (branch on carry flag set, set to one)
 		LB = fetch();
 		
-		if ((Flags & FLAG_C) == FLAG_C)
+		if ((Flags & FLAG_C) == FLAG_C) //Check if flag C is set
 		{
 			offset = (WORD)LB;
 			if ((offset & 0x80) != 0)
@@ -1304,10 +1304,10 @@ void Group_1(BYTE opcode)
 		}
 		break;
 
-	case 0x03: //BNE
+	case 0x03: //BNE  (branch on result not equal to zero)
 		LB = fetch();
 
-		if ((Flags & FLAG_Z) == 0)
+		if ((Flags & FLAG_Z) == 0) //Check if zero flag is zero (cleared)
 		{
 			offset = (WORD)LB;
 
@@ -1320,10 +1320,10 @@ void Group_1(BYTE opcode)
 		}
 		break;
 
-	case 0x04: //BEQ
+	case 0x04: //BEQ  (branch on result equal to zero)
 		LB = fetch();
 
-		if ((Flags & FLAG_Z) == FLAG_Z)
+		if ((Flags & FLAG_Z) == FLAG_Z)  //Check if zero flag is set
 		{
 			offset = (WORD)LB;
 
@@ -1336,10 +1336,10 @@ void Group_1(BYTE opcode)
 		}
 		break;
 
-	case 0x05: //BVC
+	case 0x05: //BVC  (branch on overflow flag is clear)
 		LB = fetch();
 
-		if ((Flags & FLAG_V) == 0)
+		if ((Flags & FLAG_V) == 0) //Check if flag V is clear
 		{
 			offset = (WORD)LB;
 
@@ -1352,10 +1352,10 @@ void Group_1(BYTE opcode)
 		}
 		break;
 
-	case 0x06: //BVS
+	case 0x06: //BVS  (branch on overflow flag is set)
 		LB = fetch();
 
-		if ((Flags & FLAG_V) == FLAG_V)
+		if ((Flags & FLAG_V) == FLAG_V) //Check if overflow flag is set
 		{
 			offset = (WORD)LB;
 
@@ -1368,7 +1368,7 @@ void Group_1(BYTE opcode)
 		}
 		break;
 
-	case 0x07: //BMI
+	case 0x07: //BMI  (branch on negative result)
 		LB = fetch();
 
 		if (NF == 1)
@@ -1384,7 +1384,7 @@ void Group_1(BYTE opcode)
 		}
 		break;
 
-	case 0x08: //BPL
+	case 0x08: //BPL  (branch on posotive result)
 		LB = fetch();
 
 		if (NF == 0)
@@ -1399,7 +1399,7 @@ void Group_1(BYTE opcode)
 			ProgramCounter = address;
 		}
 
-	case 0x09: //BGE
+	case 0x09: //BGE  (branch on result less than or equal to zero)
 		LB = fetch();
 
 		if ((NF ^ VF) == 0)
@@ -1414,7 +1414,7 @@ void Group_1(BYTE opcode)
 			ProgramCounter = address;
 		}
 
-	case 0x0A: //BLE
+	case 0x0A: //BLE  (branch on result greater than or equal to zero)
 		LB = fetch();
 
 		if ((ZF | NF ^ VF) == 1)
@@ -1429,7 +1429,7 @@ void Group_1(BYTE opcode)
 			ProgramCounter = address;
 		}
 
-	case 0x0B: //BLS
+	case 0x0B: //BLS  (branch on result same or lower than current)
 		LB = fetch();
 
 		if ((CF | ZF) == 1)
@@ -1444,7 +1444,7 @@ void Group_1(BYTE opcode)
 			ProgramCounter = address;
 		}
 
-	case 0x0C: //BHI
+	case 0x0C: //BHI  (branch on result)
 		LB = fetch();
 
 		if ((CF | ZF) == 0)
@@ -1459,17 +1459,17 @@ void Group_1(BYTE opcode)
 			ProgramCounter = address;
 		}
 
-	case 0x34: //CCC
+	case 0x34: //CCC   (Clears carry flag, flag V is zero)
 		Flags = Flags & FLAG_C;
 		break;
 
-	case 0x35: //CCS
+	case 0x35: //CCS   (Sets carry flag, flag V is one)
 		Flags = Flags | FLAG_C;
 		break;
 
-	case 0x36: //CNE
+	case 0x36: //CNE   (
 		
-		if ((Flags & FLAG_Z) != 0)
+		if ((Flags & FLAG_Z) == 0)
 		{
 			ProgramCounter = getAddressAbs();
 		}
@@ -1477,7 +1477,7 @@ void Group_1(BYTE opcode)
 
 	case 0x37: //CEQ
 		
-		if ((Flags & FLAG_Z) == 0)
+		if ((Flags & FLAG_Z) == FLAG_Z)
 		{
 			ProgramCounter = getAddressAbs(); 
 		}
