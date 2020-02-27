@@ -505,7 +505,8 @@ WORD getAddressAbs()
 	BYTE HB = 0;
 	BYTE LB = 0;
 	WORD address = 0;
-	fetchHighLowByte();
+	HB = fetch();
+	LB = fetch();
 	address = ((WORD)HB << 8) + LB;
 	return address; 
 }
@@ -520,9 +521,10 @@ WORD getAddressAbs()
 WORD getAddressAbsX()
 {
 	BYTE HB = 0;
-	BYTE LB = 0;
+	BYTE LB;
 	WORD address = 0;
-	fetchHighLowByte();
+	HB = fetch();
+	LB = fetch();
 	address = ((WORD)HB << 8) + LB;
 	address = address + IndexRegister;
 	return address;
@@ -627,9 +629,9 @@ void POP(BYTE reg)
 * Description: Fetches high and low bytes
 * Parameters: none
 * Returns: none (void)
-* Warnings: none
+* Warnings: Does not work properly yet.
 */
-void fetchHighLowByte()
+void fetchHighLowBytes()
 {
 	BYTE HB = fetch();
 	BYTE LB = fetch();
@@ -1549,7 +1551,8 @@ void Group_1(BYTE opcode)
 		break;
 
 	case 0x39: //CVS   (Set overflow flag)
-		fetchHighLowByte();
+		HB = fetch();
+		LB = fetch();
 
 		if ((Flags & FLAG_V) == FLAG_V) //Checks if overflow flag is set
 		{
