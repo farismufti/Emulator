@@ -1467,27 +1467,27 @@ void Group_1(BYTE opcode)
 		Flags = Flags | FLAG_C;
 		break;
 
-	case 0x36: //CNE   (
+	case 0x36: //CNE   (Result not zero, flag Z is zero)
 		
-		if ((Flags & FLAG_Z) == 0)
+		if ((Flags & FLAG_Z) == 0) //Check is flag Z is clear
 		{
 			ProgramCounter = getAddressAbs();
 		}
 		break;
 
-	case 0x37: //CEQ
+	case 0x37: //CEQ   (result equal to zero)
 		
-		if ((Flags & FLAG_Z) == FLAG_Z)
+		if ((Flags & FLAG_Z) == FLAG_Z) //Check is flag Z is set
 		{
 			ProgramCounter = getAddressAbs(); 
 		}
 		break;
 
-	case 0x38: //CCC
+	case 0x38: //CVC  (Clear overflow flag, flag V is zero)
 		Flags = Flags & FLAG_V;
 		break;
 
-	case 0x39: //CVS 
+	case 0x39: //CVS   (Set overflow flag)
 		HB = fetch();
 		LB = fetch();
 
@@ -1509,15 +1509,15 @@ void Group_1(BYTE opcode)
 		}
 		break;
 
-	case 0x3A: //CMI
+	case 0x3A: //CMI  (Negative result)
 		
-		if ((Flags & FLAG_N) == 1)
+		if ((Flags & FLAG_N) == FLAG_N) //Check if flag N is set
 		{
 			ProgramCounter = getAddressAbs();  
 		}
 		break;
 
-	case 0x3B: //CPL
+	case 0x3B: //CPL  (Positive result)
 		
 		if ((Flags & FLAG_N) == 0)
 		{
@@ -1525,7 +1525,7 @@ void Group_1(BYTE opcode)
 		}
 		break;
 
-	case 0x3C: //CHI
+	case 0x3C: //CHI   (Result same or lower)
 		LB = fetch();
 
 		if ((CF | ZF) == 1)
@@ -1541,7 +1541,7 @@ void Group_1(BYTE opcode)
 		}
 		break;
 
-	case 0x3D: //CLE
+	case 0x3D: //CLE   (Higher result)
 		LB = fetch();
 
 		if ((CF | ZF) == 0)
@@ -1567,24 +1567,24 @@ void Group_1(BYTE opcode)
 		set_zn_flags(Registers[REGISTER_A]);
 		break;
 
-	case 0x46: //RCR Absolute
+	case 0x46: //RCR Absolute  (Rotates memory to the right through carry flag)
 		address = getAddressAbs();
 		saved_flags = Flags;
-		if (Memory[address] >= 0 && address < MEMORY_SIZE)
+		if (Memory[address] >= 0 && address < MEMORY_SIZE)  //Check if memory address is valid
 		{
-			if ((Memory[address] & 0x01) == 0x01)
+			if ((Memory[address] & 0x01) == 0x01)  //Check is carry flag is clear
 			{
-				Flags = Flags | FLAG_C;
+				Flags = Flags | FLAG_C;  //Set carry flag
 			}
 			else
 			{
-				Flags = Flags & (0xFF - FLAG_C);
+				Flags = Flags & (0xFF - FLAG_C);  //Clear carry flag
 			}
 			
-			Memory[address] = (Memory[address] >> 1);
+			Memory[address] = (Memory[address] >> 1); //Shift values of memory by one to thr right
 			set_zn_flags(Memory[address]);
 
-			if ((saved_flags & FLAG_C) == FLAG_C)
+			if ((saved_flags & FLAG_C) == FLAG_C)  //Saves carry flag
 			{
 				Memory[address] = Memory[address] | 0x01;
 			}
@@ -1897,7 +1897,7 @@ void Group_1(BYTE opcode)
 		IOR(Registers[REGISTER_A], Registers[REGISTER_M]);
 		break;
 
-	case 0x4A: //NOT Absolute
+	case 0x4A: //NOT Absolute  (Negates values of memory or accumulator)
 		address = getAddressAbs();
 		Memory[address] = ~Memory[address];
 		set_zn_flags(Memory[address]);
@@ -1922,9 +1922,18 @@ void Group_1(BYTE opcode)
 
 		if (Memory[address] >= 0 && address < MEMORY_SIZE)
 		{
-			Memory[address] = (Memory[address] << 1);
-			set_zn_flags(Memory[address]);
+			if ((Memory[address] & 0x80) == 0x80)
+			{
+				Memory[address] = (Memory[address] << 1);
+				Memory[address] = Memory[address] | 0x01;
+			}
+			else
+			{
+				Memory[address] = (Memory[address] << 1);
+				Memory[address] = Memory[address] & 0xFE;
+			}
 		}
+		set_zn_flags(Memory[address]);
 		break;
 
 	case 0x5B: //ROL abs,X
@@ -1932,17 +1941,32 @@ void Group_1(BYTE opcode)
 
 		if (Memory[address] >= 0 && address < MEMORY_SIZE)
 		{
-			Memory[address] = (Memory[address] << 1);
-			set_zn_flags(Memory[address]);
+			if ((Memory[address] & 0x80) == 0x80)
+			{
+				Memory[address] = (Memory[address] << 1);
+				Memory[address] = Memory[address] | 0x01;
+			}
+			else
+			{
+				Memory[address] = (Memory[address] << 1);
+				Memory[address] = Memory[address] & 0xFE;
+			}
 		}
+		set_zn_flags(Memory[address]);
 		break;
 
 	case 0x6B: //ROLA
-		if (Registers[REGISTER_A] >= 0 && REGISTER_A < MEMORY_SIZE)
+		if ((Registers[REGISTER_A] & 0x80) == 0x80)
 		{
 			Registers[REGISTER_A] = (Registers[REGISTER_A] << 1);
-			set_zn_flags(Registers[REGISTER_A]);
+			Registers[REGISTER_A] = Registers[REGISTER_A] | 0x01;
 		}
+		else
+		{
+			Registers[REGISTER_A] = (Registers[REGISTER_A] << 1);
+			Registers[REGISTER_A] = Registers[REGISTER_A] | 0xFE;
+		}
+		set_zn_flags(Registers[REGISTER_A]);
 		break;
 
 	case 0x4C: //ROR Absolute
@@ -1950,7 +1974,16 @@ void Group_1(BYTE opcode)
 
 		if (Memory[address] >= 0 && address < MEMORY_SIZE)
 		{
-			Memory[address] = (Memory[address] >> 1);
+			if ((Memory[address] & 0x01) == 0x01)
+			{
+				Memory[address] = (Memory[address] >> 1);
+				Memory[address] = Memory[address] | 0x80;
+			}
+			else
+			{
+				Memory[address] = (Memory[address] >> 1);
+				Memory[address] = Memory[address] & 0x7F;
+			}
 		}
 		set_zn_flags(Memory[address]);
 		break;
@@ -1960,15 +1993,30 @@ void Group_1(BYTE opcode)
 
 		if (Memory[address] >= 0 && address < MEMORY_SIZE)
 		{
-			Memory[address] = (Memory[address] >> 1);
+			if ((Memory[address] & 0x01) == 0x01)
+			{
+				Memory[address] = (Memory[address] >> 1);
+				Memory[address] = Memory[address] | 0x80;
+			}
+			else
+			{
+				Memory[address] = (Memory[address] >> 1);
+				Memory[address] = Memory[address] & 0x7F;
+			}
 		}
 		set_zn_flags(Memory[address]);
 		break;
 
 	case 0x6C: //RORA
-		if (Registers[REGISTER_A] >= 0 && REGISTER_A < MEMORY_SIZE)
+		if ((Registers[REGISTER_A] & 0x01) == 0x01)
 		{
 			Registers[REGISTER_A] = (Registers[REGISTER_A] >> 1);
+			Registers[REGISTER_A] = Registers[REGISTER_A] | 0x80;
+		}
+		else
+		{
+			Registers[REGISTER_A] = (Registers[REGISTER_A] >> 1);
+			Registers[REGISTER_A] = Registers[REGISTER_A] & 0x7F;
 		}
 		set_zn_flags(Registers[REGISTER_A]);
 		break;
