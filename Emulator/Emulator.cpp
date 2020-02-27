@@ -622,6 +622,13 @@ void POP(BYTE reg)
 	reg = Memory[0];
 }
 
+/*
+* Function: group_1
+* Description: Method that holds all instructions / addressing modes in switch-case statements.
+* Parameters: opcode (BYTE)
+* Returns: none (void)
+* Warnings: Set flags correctly, incorrect flag setting leads to incorrect results.
+*/
 void Group_1(BYTE opcode)
 {
 	
@@ -1912,19 +1919,19 @@ void Group_1(BYTE opcode)
 		break;
 
 	case 0x6A: //NOTA, A
-		Registers[REGISTER_A] = ~Registers[REGISTER_A];
+		Registers[REGISTER_A] = ~Registers[REGISTER_A]; //Negates register values
 		set_zn_flags(Registers[REGISTER_A]);
 		Flags = Flags & (0xFF - FLAG_C);
 		break;
 
-	case 0x4B: //ROL Absolute
+	case 0x4B: //ROL Absolute  (Rotates values to the left by one bit without the carry flag)
 		address = getAddressAbs();
 
-		if (Memory[address] >= 0 && address < MEMORY_SIZE)
+		if (Memory[address] >= 0 && address < MEMORY_SIZE) //Check if memory address is valid
 		{
 			if ((Memory[address] & 0x80) == 0x80)
 			{
-				Memory[address] = (Memory[address] << 1);
+				Memory[address] = (Memory[address] << 1); 
 				Memory[address] = Memory[address] | 0x01;
 			}
 			else
@@ -1955,7 +1962,7 @@ void Group_1(BYTE opcode)
 		set_zn_flags(Memory[address]);
 		break;
 
-	case 0x6B: //ROLA
+	case 0x6B: //ROLA   (Same as ROL but manipulting accumulator here)
 		if ((Registers[REGISTER_A] & 0x80) == 0x80)
 		{
 			Registers[REGISTER_A] = (Registers[REGISTER_A] << 1);
@@ -1969,7 +1976,7 @@ void Group_1(BYTE opcode)
 		set_zn_flags(Registers[REGISTER_A]);
 		break;
 
-	case 0x4C: //ROR Absolute
+	case 0x4C: //ROR Absolute   (Rotates values to the right by one bit)
 		address = getAddressAbs();
 
 		if (Memory[address] >= 0 && address < MEMORY_SIZE)
@@ -2049,12 +2056,12 @@ void Group_1(BYTE opcode)
 		XOR(Registers[REGISTER_A], Registers[REGISTER_M]);
 		break;
 
-	case 0x25: //ADI
+	case 0x25: //ADI  (Data is added to carry register)
 		data = fetch();
 		data = data + Registers[REGISTER_C];
 		break;
 
-	case 0x26: //SBI
+	case 0x26: //SBI  (Carry register is subtracted from data)
 		data = fetch();
 		data = data - Registers[REGISTER_C];
 		break;
@@ -2097,7 +2104,7 @@ void Group_1(BYTE opcode)
 		set_zn_flags(Registers[REGISTER_A]);
 		break;
 
-	case 0x47: //RCL Absolute
+	case 0x47: //RCL Absolute (Rotates values to he left with carry flag)
 		address = getAddressAbs();
 		saved_flags = Flags;
 
@@ -2112,7 +2119,7 @@ void Group_1(BYTE opcode)
 		
 		Memory[address] = Memory[address] | 0x01;
 
-		if ((saved_flags & FLAG_C) == FLAG_C)
+		if ((saved_flags & FLAG_C) == FLAG_C) //Save carry flag
 		{
 			Memory[address] = Memory[address] | 0x01;
 		}
@@ -2141,7 +2148,7 @@ void Group_1(BYTE opcode)
 		set_zn_flags(Memory[address]);
 		break;
 
-	case 0x67: //RCLA
+	case 0x67: //RCLA  (Same as RCL but with register instead of memory)
 		saved_flags = Flags;
 
 		if ((Registers[REGISTER_A] & 0x80) == 0x80)
@@ -2162,18 +2169,18 @@ void Group_1(BYTE opcode)
 		set_zn_flags(Registers[REGISTER_A]);
 		break;
 
-	case 0x48: //SAL Absolute
+	case 0x48: //SAL Absolute  (Arithmetic shift to the left)
 		address = getAddressAbs();
 
 		if ((Memory[address] & 0x80) == 0x80)
 		{
-			Flags = Flags | FLAG_C;
+			Flags = Flags | FLAG_C; //Set carry flag
 		}
 		else
 		{
-			Flags = Flags & (0xFF - FLAG_C);
+			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
-		Memory[address] = (Memory[address] << 1) & 0xFE;
+		Memory[address] = (Memory[address] << 1) & 0xFE; //Left shift
 		set_zn_flags(Memory[address]);
 		break;
 
@@ -2205,7 +2212,7 @@ void Group_1(BYTE opcode)
 		set_zn_flags(Registers[REGISTER_A]);
 		break;
 
-	case 0x49: //ASR Absolute
+	case 0x49: //ASR Absolute   (Arithmetic shift to the right)
 		address = getAddressAbs();
 		
 		if ((Memory[address] & 0x01) == 0x01)
@@ -2217,7 +2224,7 @@ void Group_1(BYTE opcode)
 			Flags = Flags & (0xFF - FLAG_C);
 		}
 
-		Memory[address] = (Memory[address] >> 1) & 0x7F;
+		Memory[address] = (Memory[address] >> 1) & 0x7F; //Right shift
 		set_zn_flags(Memory[address]);
 		break;
 
@@ -2256,16 +2263,23 @@ void Group_1(BYTE opcode)
 		}
 		break;
 
-	case 0x1E: //WAI
-		halt = true;
+	case 0x1E: //WAI  (wait for software interrupt)
+		halt = true; //Halt program
 		break;
 
-	case 0x1d: //NOP
-		halt = true;
+	case 0x1d: //NOP  (No operation)
+		halt = true;  //Halt program
 		break;
 	}
 }
 
+/*
+* Function: Group_2_Move
+* Description: The method containing the MOVE instructions that transfer a register to another.
+* Parameters: opcode (BYTE)
+* Returns: none (void)
+* Warnings: none
+*/
 void Group_2_Move(BYTE opcode)
 {
 	int destination;
@@ -2362,7 +2376,13 @@ void Group_2_Move(BYTE opcode)
 }
 
 
-
+/*
+* Function: execute
+* Description: executes the program if a certain opcode is entered.
+* Parameters: opcode (BYTE)
+* Returns: none (void)
+* Warnings: none
+*/
 void execute(BYTE opcode)
 {
 	if (((opcode >= 0x78) && (opcode <= 0x7F))
@@ -2382,6 +2402,13 @@ void execute(BYTE opcode)
 	}
 }
 
+/*
+* Function: emulate
+* Description: Prints out what operations, flags, or registers are being called or manipulated.
+* Parameters: none
+* Returns: none (void)
+* Warnings: Do not modify or chnage anything
+*/
 void emulate()
 {
 	BYTE opcode;
