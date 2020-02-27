@@ -6,6 +6,11 @@
 *User advice: none
 */
 
+/* Note: For instructions with Abs, Abs,X, the comments and descriptions are the same.
+       comments are not rewritten to avoid repition, they have similar descriptions.
+*/
+
+
 #include "stdafx.h"
 #include <winsock2.h>
 
@@ -381,16 +386,16 @@ char opcode_mneumonics[][14] =
 
 /*
 * Function: fetch
-* Description: 
-* Parameters:
-* Returns:
-* Warnings:
+* Description: returns the memory location at ProgramCounter.
+* Parameters: none
+* Returns: none (VOID)
+* Warnings: none
 */
 BYTE fetch()
 {
 	BYTE byte = 0;
 
-	if ((ProgramCounter >= 0) && (ProgramCounter <= MEMORY_SIZE))
+	if ((ProgramCounter >= 0) && (ProgramCounter <= MEMORY_SIZE)) //Check location validity
 	{
 		memory_in_range = true;
 		byte = Memory[ProgramCounter];
@@ -500,8 +505,7 @@ WORD getAddressAbs()
 	BYTE HB = 0;
 	BYTE LB = 0;
 	WORD address = 0;
-	HB = fetch();
-	LB = fetch();
+	fetchHighLowByte();
 	address = ((WORD)HB << 8) + LB;
 	return address; 
 }
@@ -518,8 +522,7 @@ WORD getAddressAbsX()
 	BYTE HB = 0;
 	BYTE LB = 0;
 	WORD address = 0;
-	HB = fetch();
-	LB = fetch();
+	fetchHighLowByte();
 	address = ((WORD)HB << 8) + LB;
 	address = address + IndexRegister;
 	return address;
@@ -527,7 +530,7 @@ WORD getAddressAbsX()
 
 /*
 * Function: pop8
-* Description: Returns the byte at the StackPointer value in memory
+* Description: Returns the location in memory at StackPointer.
 * Parameters: none
 * Returns: reg (BYTE)
 * Warnings: none
@@ -556,8 +559,7 @@ BYTE negate(BYTE inReg)
 
 /*
 * Function: IOR
-* Description: An inclusive OR is performed with two registers, and the value is set to register A,
-               the Z and N flags are then set to register A.
+* Description: An inclusive OR is performed with two registers.
 * Parameters: reg1 (BYTE), reg2 (BYTE)
 * Returns: none (void)
 * Warnings: none
@@ -570,8 +572,7 @@ void IOR(BYTE reg1, BYTE reg2)
 
 /*
 * Function: XOR
-* Description: An exlusive OR is performed with two registers, and the value is set to register A,
-			   the Z and N flags are then set to register A.
+* Description: An exlusive OR is performed with two registers.
 * Parameters: reg1 (BYTE), reg2 (BYTE)
 * Returns: none (void)
 * Warnings: none
@@ -584,8 +585,7 @@ void XOR(BYTE reg1, BYTE reg2)
 
 /*
 * Function: AND
-* Description: An AND is performed with two registers, and the value is set to register A,
-               the Z and N flags are then set to register A.
+* Description: An AND is performed with two registers.
 * Parameters: reg1 (BYTE), reg2 (BYTE)
 * Returns: none (void)
 * Warnings: none
@@ -612,7 +612,7 @@ void BT(BYTE reg1, BYTE reg2)
 
 /*
 * Function: POP
-* Description: Pops the first bit of the memory (stack) into the inputted register.
+* Description: Pops first bit of the memory (stack) into the inputted register.
 * Parameters: reg (BYTE)
 * Returns: none (void)
 * Warnings: none
@@ -620,6 +620,19 @@ void BT(BYTE reg1, BYTE reg2)
 void POP(BYTE reg)
 {
 	reg = Memory[0];
+}
+
+/*
+* Function: fetchHighLowBytes
+* Description: Fetches high and low bytes
+* Parameters: none
+* Returns: none (void)
+* Warnings: none
+*/
+void fetchHighLowByte()
+{
+	BYTE HB = fetch();
+	BYTE LB = fetch();
 }
 
 /*
@@ -847,6 +860,7 @@ void Group_1(BYTE opcode)
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_B];
 		temp_word = (WORD)Registers[REGISTER_A] + (WORD)Registers[REGISTER_B];
+		
 		if ((Flags & FLAG_C) != 0) //Check if carry flag is not clear
 		{
 			temp_word++;
@@ -860,6 +874,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, param2, temp_word);
 		Registers[REGISTER_A] = (BYTE)temp_word;
@@ -869,6 +884,7 @@ void Group_1(BYTE opcode)
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_C];
 		temp_word = (WORD)Registers[REGISTER_A] + (WORD)Registers[REGISTER_C];
+		
 		if ((Flags & FLAG_C) != 0)
 		{
 			temp_word++;
@@ -882,6 +898,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, param2, temp_word);
 		Registers[REGISTER_A] = (BYTE)temp_word;
@@ -891,6 +908,7 @@ void Group_1(BYTE opcode)
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_D];
 		temp_word = (WORD)Registers[REGISTER_A] + (WORD)Registers[REGISTER_D];
+		
 		if ((Flags & FLAG_C) != 0)
 		{
 			temp_word++;
@@ -904,6 +922,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, param2, temp_word);
 		Registers[REGISTER_A] = (BYTE)temp_word;
@@ -913,6 +932,7 @@ void Group_1(BYTE opcode)
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_E];
 		temp_word = (WORD)Registers[REGISTER_A] + (WORD)Registers[REGISTER_E];
+		
 		if ((Flags & FLAG_C) != 0)
 		{
 			temp_word++;
@@ -926,6 +946,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, param2, temp_word);
 		Registers[REGISTER_A] = (BYTE)temp_word;
@@ -935,6 +956,7 @@ void Group_1(BYTE opcode)
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_L];
 		temp_word = (WORD)Registers[REGISTER_A] + (WORD)Registers[REGISTER_L];
+		
 		if ((Flags & FLAG_C) != 0)
 		{
 			temp_word++;
@@ -948,6 +970,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, param2, temp_word);
 		Registers[REGISTER_A] = (BYTE)temp_word;
@@ -956,6 +979,7 @@ void Group_1(BYTE opcode)
 	case 0xE0: // ADC A-H
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_H];
+		
 		temp_word = (WORD)Registers[REGISTER_A] + (WORD)Registers[REGISTER_H];
 		if ((Flags & FLAG_C) != 0)
 		{
@@ -970,6 +994,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, param2, temp_word);
 		Registers[REGISTER_A] = (BYTE)temp_word;
@@ -979,6 +1004,7 @@ void Group_1(BYTE opcode)
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_M];
 		temp_word = (WORD)Registers[REGISTER_A] + (WORD)Registers[REGISTER_M];
+		
 		if ((Flags & FLAG_C) != 0)
 		{
 			temp_word++;
@@ -992,6 +1018,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, param2, temp_word);
 		Registers[REGISTER_A] = (BYTE)temp_word;
@@ -1010,6 +1037,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, -param2, temp_word);
 		break;
@@ -1027,6 +1055,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, -param2, temp_word);
 		break;
@@ -1044,6 +1073,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, -param2, temp_word);
 		break;
@@ -1061,6 +1091,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, -param2, temp_word);
 		break;
@@ -1078,6 +1109,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, -param2, temp_word);
 		break;
@@ -1095,6 +1127,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, -param2, temp_word);
 		break;
@@ -1112,6 +1145,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, -param2, temp_word);
 		break;
@@ -1149,6 +1183,7 @@ void Group_1(BYTE opcode)
 		break;
 
 	case 0x11: //PSH,A  (Pushes register onto the stack)
+		
 		if ((StackPointer >= 1) && (StackPointer < MEMORY_SIZE)) //Check if StackPointer value is valid
 		{
 			Memory[StackPointer] = Registers[REGISTER_A]; //Push register into memory
@@ -1157,6 +1192,7 @@ void Group_1(BYTE opcode)
 		break;
 
 	case 0x21: //PSH,FL (Status register)
+		
 		if ((StackPointer >= 1) && (StackPointer < MEMORY_SIZE))
 		{
 			Memory[StackPointer] = Registers[REGISTER_FL];
@@ -1165,6 +1201,7 @@ void Group_1(BYTE opcode)
 		break;
 
 	case 0x31: //PSH,B
+		
 		if ((StackPointer >= 1) && (StackPointer < MEMORY_SIZE))
 		{
 			Memory[StackPointer] = Registers[REGISTER_B];
@@ -1173,6 +1210,7 @@ void Group_1(BYTE opcode)
 		break;
 
 	case 0x41: //PSH,C
+		
 		if ((StackPointer >= 1) && (StackPointer < MEMORY_SIZE))
 		{
 			Memory[StackPointer] = Registers[REGISTER_C];
@@ -1181,6 +1219,7 @@ void Group_1(BYTE opcode)
 		break;
 
 	case 0x51: //PSH,D
+		
 		if ((StackPointer >= 1) && (StackPointer < MEMORY_SIZE))
 		{
 			Memory[StackPointer] = Registers[REGISTER_D];
@@ -1189,6 +1228,7 @@ void Group_1(BYTE opcode)
 		break;
 
 	case 0x61: //PSH,E
+		
 		if ((StackPointer >= 1) && (StackPointer < MEMORY_SIZE))
 		{
 			Memory[StackPointer] = Registers[REGISTER_E];
@@ -1197,6 +1237,7 @@ void Group_1(BYTE opcode)
 		break;
 
 	case 0x71: //PSH,L
+		
 		if ((StackPointer >= 1) && (StackPointer < MEMORY_SIZE))
 		{
 			Memory[StackPointer] = Registers[REGISTER_L];
@@ -1205,6 +1246,7 @@ void Group_1(BYTE opcode)
 		break;
 
 	case 0x81: //PSH,H
+		
 		if ((StackPointer >= 1) && (StackPointer < MEMORY_SIZE))
 		{
 			Memory[StackPointer] = Registers[REGISTER_H];
@@ -1227,6 +1269,7 @@ void Group_1(BYTE opcode)
 			Memory[StackPointer] = (BYTE)((ProgramCounter >> 8) & 0xFF);
 			StackPointer--;
 		}
+
 		ProgramCounter = address;
 		break;
 
@@ -1244,6 +1287,7 @@ void Group_1(BYTE opcode)
 		{
 			offset = offset + 0xFF00;
 		}
+		
 		address = ProgramCounter + offset;
 		ProgramCounter = address;
 		break;
@@ -1354,6 +1398,7 @@ void Group_1(BYTE opcode)
 			{
 				offset = offset + 0xFF00;
 			}
+			
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
 		}
@@ -1370,6 +1415,7 @@ void Group_1(BYTE opcode)
 			{
 				offset = offset + 0xFF00;
 			}
+			
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
 		}
@@ -1386,6 +1432,7 @@ void Group_1(BYTE opcode)
 			{
 				offset = offset + 0xFF00;
 			}
+			
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
 		}
@@ -1402,6 +1449,7 @@ void Group_1(BYTE opcode)
 			{
 				offset = offset + 0xFF00;
 			}
+			
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
 		}
@@ -1417,6 +1465,7 @@ void Group_1(BYTE opcode)
 			{
 				offset = offset + 0xFF00;
 			}
+			
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
 		}
@@ -1432,6 +1481,7 @@ void Group_1(BYTE opcode)
 			{
 				offset = offset + 0xFF00;
 			}
+			
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
 		}
@@ -1447,6 +1497,7 @@ void Group_1(BYTE opcode)
 			{
 				offset = offset + 0xFF00;
 			}
+			
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
 		}
@@ -1462,6 +1513,7 @@ void Group_1(BYTE opcode)
 			{
 				offset = offset + 0xFF00;
 			}
+			
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
 		}
@@ -1480,6 +1532,7 @@ void Group_1(BYTE opcode)
 		{
 			ProgramCounter = getAddressAbs();
 		}
+		
 		break;
 
 	case 0x37: //CEQ   (result equal to zero)
@@ -1488,6 +1541,7 @@ void Group_1(BYTE opcode)
 		{
 			ProgramCounter = getAddressAbs(); 
 		}
+		
 		break;
 
 	case 0x38: //CVC  (Clear overflow flag, flag V is zero)
@@ -1495,8 +1549,7 @@ void Group_1(BYTE opcode)
 		break;
 
 	case 0x39: //CVS   (Set overflow flag)
-		HB = fetch();
-		LB = fetch();
+		fetchHighLowByte();
 
 		if ((Flags & FLAG_V) == FLAG_V) //Checks if overflow flag is set
 		{
@@ -1511,6 +1564,7 @@ void Group_1(BYTE opcode)
 					Memory[StackPointer] = (BYTE)((ProgramCounter >> 8) & 0xFF);
 					StackPointer--;
 				}
+				
 				ProgramCounter = (WORD)address;
 			}
 		}
@@ -1543,6 +1597,7 @@ void Group_1(BYTE opcode)
 			{
 				offset = offset + 0xFF00;
 			}
+			
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
 		}
@@ -1559,6 +1614,7 @@ void Group_1(BYTE opcode)
 			{
 				offset = offset + 0xFF00;
 			}
+			
 			address = ProgramCounter + offset;
 			ProgramCounter = address;
 		}
@@ -1577,6 +1633,7 @@ void Group_1(BYTE opcode)
 	case 0x46: //RCR Absolute  (Rotates memory to the right through carry flag)
 		address = getAddressAbs();
 		saved_flags = Flags;
+		
 		if (Memory[address] >= 0 && address < MEMORY_SIZE)  //Check if memory address is valid
 		{
 			if ((Memory[address] & 0x01) == 0x01)  //Check is carry flag is clear
@@ -1612,6 +1669,7 @@ void Group_1(BYTE opcode)
 			{
 				Flags = Flags & (0xFF - FLAG_C);
 			}
+			
 			Memory[address] = (Memory[address] >> 1);
 			set_zn_flags(Memory[address]);
 
@@ -1640,6 +1698,7 @@ void Group_1(BYTE opcode)
 		{
 			Registers[REGISTER_A] = Registers[REGISTER_A] | 0x01;
 		}
+		
 		set_zn_flags(Registers[REGISTER_A]);
 		break;
 
@@ -1738,6 +1797,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, -param2, temp_word);
 		Registers[REGISTER_A] = (BYTE)temp_word;
@@ -1747,6 +1807,7 @@ void Group_1(BYTE opcode)
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_C];
 		temp_word = (WORD)Registers[REGISTER_A] - (WORD)Registers[REGISTER_C];
+		
 		if ((Flags & FLAG_C) != 0)
 		{
 			temp_word--;
@@ -1760,6 +1821,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, -param2, temp_word);
 		Registers[REGISTER_A] = (BYTE)temp_word;
@@ -1769,6 +1831,7 @@ void Group_1(BYTE opcode)
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_D];
 		temp_word = (WORD)Registers[REGISTER_A] - (WORD)Registers[REGISTER_D];
+		
 		if ((Flags & FLAG_C) != 0)
 		{
 			temp_word--;
@@ -1782,6 +1845,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, -param2, temp_word);
 		Registers[REGISTER_A] = (BYTE)temp_word;
@@ -1791,6 +1855,7 @@ void Group_1(BYTE opcode)
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_E];
 		temp_word = (WORD)Registers[REGISTER_A] - (WORD)Registers[REGISTER_E];
+		
 		if ((Flags & FLAG_C) != 0)
 		{
 			temp_word--;
@@ -1804,6 +1869,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, -param2, temp_word);
 		Registers[REGISTER_A] = (BYTE)temp_word;
@@ -1814,6 +1880,7 @@ void Group_1(BYTE opcode)
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_L];
 		temp_word = (WORD)Registers[REGISTER_A] - (WORD)Registers[REGISTER_L];
+		
 		if ((Flags & FLAG_C) != 0)
 		{
 			temp_word--;
@@ -1827,6 +1894,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, -param2, temp_word);
 		Registers[REGISTER_A] = (BYTE)temp_word;
@@ -1836,6 +1904,7 @@ void Group_1(BYTE opcode)
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_H];
 		temp_word = (WORD)Registers[REGISTER_A] - (WORD)Registers[REGISTER_H];
+		
 		if ((Flags & FLAG_C) != 0)
 		{
 			temp_word--;
@@ -1849,6 +1918,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, -param2, temp_word);
 		Registers[REGISTER_A] = (BYTE)temp_word;
@@ -1858,6 +1928,7 @@ void Group_1(BYTE opcode)
 		param1 = Registers[REGISTER_A];
 		param2 = Registers[REGISTER_M];
 		temp_word = (WORD)Registers[REGISTER_A] - (WORD)Registers[REGISTER_M];
+		
 		if ((Flags & FLAG_C) != 0)
 		{
 			temp_word--;
@@ -1871,6 +1942,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+		
 		set_zn_flags((BYTE)temp_word);
 		set_flag_v(param1, -param2, temp_word);
 		Registers[REGISTER_A] = (BYTE)temp_word;
@@ -1940,6 +2012,7 @@ void Group_1(BYTE opcode)
 				Memory[address] = Memory[address] & 0xFE;
 			}
 		}
+
 		set_zn_flags(Memory[address]);
 		break;
 
@@ -1959,10 +2032,12 @@ void Group_1(BYTE opcode)
 				Memory[address] = Memory[address] & 0xFE;
 			}
 		}
+
 		set_zn_flags(Memory[address]);
 		break;
 
 	case 0x6B: //ROLA   (Same as ROL but manipulting accumulator here)
+		
 		if ((Registers[REGISTER_A] & 0x80) == 0x80)
 		{
 			Registers[REGISTER_A] = (Registers[REGISTER_A] << 1);
@@ -1973,6 +2048,7 @@ void Group_1(BYTE opcode)
 			Registers[REGISTER_A] = (Registers[REGISTER_A] << 1);
 			Registers[REGISTER_A] = Registers[REGISTER_A] | 0xFE;
 		}
+
 		set_zn_flags(Registers[REGISTER_A]);
 		break;
 
@@ -1992,6 +2068,7 @@ void Group_1(BYTE opcode)
 				Memory[address] = Memory[address] & 0x7F;
 			}
 		}
+
 		set_zn_flags(Memory[address]);
 		break;
 
@@ -2011,6 +2088,7 @@ void Group_1(BYTE opcode)
 				Memory[address] = Memory[address] & 0x7F;
 			}
 		}
+
 		set_zn_flags(Memory[address]);
 		break;
 
@@ -2025,6 +2103,7 @@ void Group_1(BYTE opcode)
 			Registers[REGISTER_A] = (Registers[REGISTER_A] >> 1);
 			Registers[REGISTER_A] = Registers[REGISTER_A] & 0x7F;
 		}
+
 		set_zn_flags(Registers[REGISTER_A]);
 		break;
 
@@ -2123,6 +2202,7 @@ void Group_1(BYTE opcode)
 		{
 			Memory[address] = Memory[address] | 0x01;
 		}
+
 		set_zn_flags(Memory[address]);
 		break;
 
@@ -2145,6 +2225,7 @@ void Group_1(BYTE opcode)
 		{
 			Memory[address] = Memory[address] | 0x01;
 		}
+
 		set_zn_flags(Memory[address]);
 		break;
 
@@ -2166,6 +2247,7 @@ void Group_1(BYTE opcode)
 		{
 			Registers[REGISTER_A] = Registers[REGISTER_A] | 0x01;
 		}
+
 		set_zn_flags(Registers[REGISTER_A]);
 		break;
 
@@ -2180,6 +2262,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C); //Clear carry flag
 		}
+
 		Memory[address] = (Memory[address] << 1) & 0xFE; //Left shift
 		set_zn_flags(Memory[address]);
 		break;
@@ -2195,6 +2278,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C);
 		}
+
 		Memory[address] = (Memory[address] << 1) & 0xFE;
 		set_zn_flags(Memory[address]);
 		break;
@@ -2208,6 +2292,7 @@ void Group_1(BYTE opcode)
 		{
 			Flags = Flags & (0xFF - FLAG_C);
 		}
+
 		Registers[REGISTER_A] = (Registers[REGISTER_A] << 1) & 0xFE;
 		set_zn_flags(Registers[REGISTER_A]);
 		break;
@@ -2261,6 +2346,7 @@ void Group_1(BYTE opcode)
 		{
 			Registers[REGISTER_A] = Registers[REGISTER_A] | 0x80;
 		}
+
 		break;
 
 	case 0x1E: //WAI  (wait for software interrupt)
