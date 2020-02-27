@@ -1,7 +1,7 @@
 /*
 *Author: Faris Mufti (19044237)
 *Created 06 Feb. 2020
-*Revised: 27 Feb. 2020 - Fixed some instructions and added comments
+*Revised: 27 Feb. 2020 - Fixed instructions and added comments
 *Description: Chimera 8080 Microprocessor Emulator
 *User advice: none
 */
@@ -528,6 +528,22 @@ WORD getAddressAbsX()
 	address = ((WORD)HB << 8) + LB;
 	address = address + IndexRegister;
 	return address;
+}
+
+/*
+* Function: PSH
+* Description: Pushes register onto stack.
+* Parameters: reg (BYTE)
+* Returns: none (VOID)
+* Warnings: none
+*/
+void PSH(BYTE reg)
+{
+	if ((StackPointer >= 1) && (StackPointer < MEMORY_SIZE)) //Check if StackPointer value is valid
+	{
+		Memory[StackPointer] = reg; //Push register into memory
+		StackPointer--;
+	}
 }
 
 /*
@@ -1186,74 +1202,42 @@ void Group_1(BYTE opcode)
 
 	case 0x11: //PSH,A  (Pushes register onto the stack)
 		
-		if ((StackPointer >= 1) && (StackPointer < MEMORY_SIZE)) //Check if StackPointer value is valid
-		{
-			Memory[StackPointer] = Registers[REGISTER_A]; //Push register into memory
-			StackPointer--;
-		}
+		PSH(Registers[REGISTER_A]);
 		break;
 
 	case 0x21: //PSH,FL (Status register)
 		
-		if ((StackPointer >= 1) && (StackPointer < MEMORY_SIZE))
-		{
-			Memory[StackPointer] = Registers[REGISTER_FL];
-			StackPointer--;
-		}
+		PSH(Registers[REGISTER_FL]);
 		break;
 
 	case 0x31: //PSH,B
 		
-		if ((StackPointer >= 1) && (StackPointer < MEMORY_SIZE))
-		{
-			Memory[StackPointer] = Registers[REGISTER_B];
-			StackPointer--;
-		}
+		PSH(Registers[REGISTER_B]);
 		break;
 
 	case 0x41: //PSH,C
 		
-		if ((StackPointer >= 1) && (StackPointer < MEMORY_SIZE))
-		{
-			Memory[StackPointer] = Registers[REGISTER_C];
-			StackPointer--;
-		}
+		PSH(Registers[REGISTER_C]);
 		break;
 
 	case 0x51: //PSH,D
 		
-		if ((StackPointer >= 1) && (StackPointer < MEMORY_SIZE))
-		{
-			Memory[StackPointer] = Registers[REGISTER_D];
-			StackPointer--;
-		}
+		PSH(Registers[REGISTER_D]);
 		break;
 
 	case 0x61: //PSH,E
 		
-		if ((StackPointer >= 1) && (StackPointer < MEMORY_SIZE))
-		{
-			Memory[StackPointer] = Registers[REGISTER_E];
-			StackPointer--;
-		}
+		PSH(Registers[REGISTER_E]);
 		break;
 
 	case 0x71: //PSH,L
 		
-		if ((StackPointer >= 1) && (StackPointer < MEMORY_SIZE))
-		{
-			Memory[StackPointer] = Registers[REGISTER_L];
-			StackPointer--;
-		}
+		PSH(Registers[REGISTER_L]);
 		break;
 
 	case 0x81: //PSH,H
 		
-		if ((StackPointer >= 1) && (StackPointer < MEMORY_SIZE))
-		{
-			Memory[StackPointer] = Registers[REGISTER_H];
-			StackPointer--;
-		}
+		PSH(Registers[REGISTER_H]);
 		break;
 
 	case 0xFA: //JMP Absolute  (Load memory onto program counter)
